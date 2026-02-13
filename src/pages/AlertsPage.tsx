@@ -66,7 +66,7 @@ const AlertsPage = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-heading font-bold">Avisos</h1>
+          <h1 className="text-2xl sm:text-3xl font-heading font-bold">Avisos</h1>
           <p className="text-muted-foreground mt-1">
             {unreadAlerts > 0 ? `${unreadAlerts} não lido(s) · ${grouped.length} produto(s)` : 'Todos os avisos foram lidos'}
           </p>

@@ -58,7 +58,7 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-heading font-bold">Painel Administrativo</h1>
+        <h1 className="text-2xl sm:text-3xl font-heading font-bold">Painel Administrativo</h1>
         <p className="text-muted-foreground mt-1">Visão geral do sistema</p>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">

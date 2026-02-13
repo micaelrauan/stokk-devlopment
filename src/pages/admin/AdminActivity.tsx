@@ -32,7 +32,7 @@ export default function AdminActivity() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-heading font-bold">Atividade</h1>
+        <h1 className="text-2xl sm:text-3xl font-heading font-bold">Atividade</h1>
         <p className="text-muted-foreground mt-1">Logs de atividade recentes ({filtered.length} registros)</p>
       </div>
 

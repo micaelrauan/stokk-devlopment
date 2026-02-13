@@ -32,44 +32,46 @@ function SaleRow({ sale }: { sale: Sale }) {
     <div className="border border-border rounded-lg overflow-hidden">
       <button
         onClick={() => setOpen(o => !o)}
-        className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-muted/30 transition-colors text-left"
+        className="w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-5 py-3 sm:py-3.5 hover:bg-muted/30 transition-colors text-left"
       >
-        <Receipt className="w-4 h-4 text-muted-foreground shrink-0" />
+        <Receipt className="w-4 h-4 text-muted-foreground shrink-0 hidden sm:block" />
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold">
             Venda #{sale.id.slice(-6)}
             {sale.customerName && (
-              <span className="text-muted-foreground font-normal ml-2">— {sale.customerName}</span>
+              <span className="text-muted-foreground font-normal ml-2 hidden sm:inline">— {sale.customerName}</span>
             )}
           </p>
           <p className="text-xs text-muted-foreground">
             {format(sale.createdAt, "dd 'de' MMMM, HH:mm", { locale: ptBR })}
           </p>
         </div>
-        <Badge variant="outline" className="gap-1.5 shrink-0">
-          {payment.icon}
-          {payment.label}
-        </Badge>
-        <span className="text-sm font-bold font-mono shrink-0 w-28 text-right">
-          R$ {sale.total.toFixed(2)}
-        </span>
-        {open ? <ChevronUp className="w-4 h-4 shrink-0 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 shrink-0 text-muted-foreground" />}
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <Badge variant="outline" className="gap-1 sm:gap-1.5 shrink-0 text-xs">
+            {payment.icon}
+            <span className="hidden sm:inline">{payment.label}</span>
+          </Badge>
+          <span className="text-sm font-bold font-mono shrink-0 text-right">
+            R$ {sale.total.toFixed(2)}
+          </span>
+          {open ? <ChevronUp className="w-4 h-4 shrink-0 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 shrink-0 text-muted-foreground" />}
+        </div>
       </button>
 
       {open && (
-        <div className="border-t border-border bg-muted/10 px-5 py-4 space-y-3">
+        <div className="border-t border-border bg-muted/10 px-3 sm:px-5 py-3 sm:py-4 space-y-3">
           {/* Items */}
           <div className="space-y-1.5">
             {sale.items.map((item, i) => (
-              <div key={i} className="flex items-center gap-3 text-sm">
-                <Package className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                <span className="flex-1 truncate">
+              <div key={i} className="flex items-center gap-2 sm:gap-3 text-sm">
+                <Package className="w-3.5 h-3.5 text-muted-foreground shrink-0 hidden sm:block" />
+                <span className="flex-1 truncate text-xs sm:text-sm">
                   {item.productName}
                   <span className="text-muted-foreground ml-1">({item.variantLabel})</span>
                 </span>
-                <span className="text-muted-foreground font-mono text-xs">{item.sku}</span>
-                <span className="font-mono text-xs w-8 text-center">{item.quantity}×</span>
-                <span className="font-mono w-24 text-right">R$ {(item.unitPrice * item.quantity).toFixed(2)}</span>
+                <span className="text-muted-foreground font-mono text-xs hidden md:inline">{item.sku}</span>
+                <span className="font-mono text-xs w-6 sm:w-8 text-center shrink-0">{item.quantity}×</span>
+                <span className="font-mono text-xs sm:text-sm w-20 sm:w-24 text-right shrink-0">R$ {(item.unitPrice * item.quantity).toFixed(2)}</span>
               </div>
             ))}
           </div>
@@ -161,11 +163,11 @@ export default function SalesHistoryPage() {
             type="date"
             value={dateFilter}
             onChange={e => setDateFilter(e.target.value)}
-            className="pl-10 h-9 w-44"
+            className="pl-10 h-9 w-full sm:w-44"
           />
         </div>
         <Select value={paymentFilter} onValueChange={setPaymentFilter}>
-          <SelectTrigger className="w-40 h-9">
+          <SelectTrigger className="w-full sm:w-40 h-9">
             <Filter className="w-4 h-4 mr-2 text-muted-foreground" />
             <SelectValue placeholder="Pagamento" />
           </SelectTrigger>

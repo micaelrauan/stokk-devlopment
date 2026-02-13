@@ -73,7 +73,7 @@ export default function ReaderPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-heading font-bold">Leitor de Código de Barras</h1>
+        <h1 className="text-2xl sm:text-3xl font-heading font-bold">Leitor de Código de Barras</h1>
         <p className="text-muted-foreground mt-1">Busque produtos pelo código de barras</p>
       </div>
 

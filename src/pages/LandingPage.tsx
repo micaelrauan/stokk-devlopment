@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import logo from "@/assets/logo.png";
+import { Menu } from "lucide-react";
 
 /* ─── Animated counter hook ─── */
 function useCountUp(target: number, duration = 2000) {
@@ -59,6 +60,7 @@ function useCountUp(target: number, duration = 2000) {
 export default function LandingPage() {
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -213,23 +215,59 @@ export default function LandingPage() {
               Depoimentos
             </a>
           </nav>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              onClick={() => setMobileMenuOpen(v => !v)}
+              className="md:hidden p-2 rounded-lg hover:bg-muted transition-colors"
+              aria-label="Menu"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => navigate("/login")}
+              className="hidden sm:inline-flex"
             >
               Entrar
             </Button>
             <Button
               size="sm"
               onClick={() => navigate("/login")}
-              className="gap-2 rounded-full px-5"
+              className="gap-2 rounded-full px-3 sm:px-5 text-xs sm:text-sm"
             >
-              Começar grátis <ArrowRight className="w-4 h-4" />
+              <span className="hidden sm:inline">Começar grátis</span>
+              <span className="sm:hidden">Começar</span>
+              <ArrowRight className="w-4 h-4" />
             </Button>
           </div>
         </div>
+
+        {/* Mobile menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-border bg-background/95 backdrop-blur-xl px-6 py-4 space-y-3 animate-in slide-in-from-top-2 duration-200">
+            <a href="#features" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-muted-foreground hover:text-foreground transition-colors py-2">
+              Recursos
+            </a>
+            <a href="#how" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-muted-foreground hover:text-foreground transition-colors py-2">
+              Como funciona
+            </a>
+            <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-muted-foreground hover:text-foreground transition-colors py-2">
+              Planos
+            </a>
+            <a href="#testimonials" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-muted-foreground hover:text-foreground transition-colors py-2">
+              Depoimentos
+            </a>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => { navigate("/login"); setMobileMenuOpen(false); }}
+              className="w-full mt-2"
+            >
+              Entrar
+            </Button>
+          </div>
+        )}
       </header>
 
       {/* ═══ HERO ═══ */}
@@ -468,7 +506,7 @@ export default function LandingPage() {
             </div>
 
             {/* PRO */}
-            <div className="rounded-2xl p-8 relative bg-gradient-to-br from-foreground to-foreground/80 text-background shadow-2xl shadow-foreground/10 transition-all duration-300 hover:-translate-y-1 scale-[1.02]">
+            <div className="rounded-2xl p-8 relative bg-gradient-to-br from-foreground to-foreground/80 text-background shadow-2xl shadow-foreground/10 transition-all duration-300 hover:-translate-y-1 sm:scale-[1.02]">
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-background text-foreground text-xs font-bold px-4 py-1.5 rounded-full shadow-sm flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5" />
                 TUDO ILIMITADO

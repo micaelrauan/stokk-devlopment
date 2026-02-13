@@ -326,7 +326,7 @@ export default function AdminUsers() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-heading font-bold">Empresas</h1>
+          <h1 className="text-2xl sm:text-3xl font-heading font-bold">Empresas</h1>
           <p className="text-muted-foreground mt-1">
             Gerencie as empresas do sistema ({users.length} total)
           </p>
@@ -434,55 +434,55 @@ export default function AdminUsers() {
                   </span>
                 </td>
                 <td className="py-3 px-4 text-right">
-                  <div className="flex items-center justify-end gap-1">
+                  <div className="flex items-center justify-end gap-1 flex-wrap">
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8"
+                      className="h-7 w-7 sm:h-8 sm:w-8"
                       onClick={() => setDetailUser(u)}
                       title="Detalhes"
                     >
-                      <Eye className="w-4 h-4" />
+                      <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8"
+                      className="h-7 w-7 sm:h-8 sm:w-8"
                       onClick={() => setEditUser(u)}
                       title="Editar"
                     >
-                      <Edit className="w-4 h-4" />
+                      <Edit className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8"
+                      className="h-7 w-7 sm:h-8 sm:w-8"
                       onClick={() => handleToggleActive(u.id, u.is_active)}
                       title={u.is_active ? "Desativar" : "Ativar"}
                     >
                       {u.is_active ? (
-                        <Ban className="w-4 h-4 text-warning" />
+                        <Ban className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-warning" />
                       ) : (
-                        <CheckCircle className="w-4 h-4 text-success" />
+                        <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-success" />
                       )}
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-destructive"
+                      className="h-7 w-7 sm:h-8 sm:w-8 text-destructive hidden sm:inline-flex"
                       onClick={() => setCancelUserId(u.id)}
                       title="Cancelar conta"
                     >
-                      <X className="w-4 h-4" />
+                      <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-destructive"
+                      className="h-7 w-7 sm:h-8 sm:w-8 text-destructive"
                       onClick={() => setDeleteUserId(u.id)}
                       title="Excluir dados"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </Button>
                   </div>
                 </td>

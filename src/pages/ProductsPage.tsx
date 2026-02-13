@@ -51,27 +51,27 @@ export default function ProductsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-heading font-bold">Produtos</h1>
-          <p className="text-muted-foreground mt-1">Gerencie seu catálogo e grade de estoque</p>
+          <h1 className="text-2xl sm:text-3xl font-heading font-bold">Produtos</h1>
+          <p className="text-muted-foreground mt-1 text-sm">Gerencie seu catálogo e grade de estoque</p>
         </div>
-        <div className="flex gap-2">
-          <Button onClick={() => setShowCategories(true)} variant="outline" className="gap-2">
+        <div className="flex flex-wrap gap-2">
+          <Button onClick={() => setShowCategories(true)} variant="outline" size="sm" className="gap-2">
             <Settings2 className="w-4 h-4" />
-            Categorias
+            <span className="hidden sm:inline">Categorias</span>
           </Button>
-          <Button onClick={() => setShowColors(true)} variant="outline" className="gap-2">
+          <Button onClick={() => setShowColors(true)} variant="outline" size="sm" className="gap-2">
             <Palette className="w-4 h-4" />
-            Cores
+            <span className="hidden sm:inline">Cores</span>
           </Button>
-          <Button onClick={() => setShowSizes(true)} variant="outline" className="gap-2">
+          <Button onClick={() => setShowSizes(true)} variant="outline" size="sm" className="gap-2">
             <Ruler className="w-4 h-4" />
-            Tamanhos
+            <span className="hidden sm:inline">Tamanhos</span>
           </Button>
-          <Button onClick={() => setShowAdd(true)} className="gap-2">
+          <Button onClick={() => setShowAdd(true)} size="sm" className="gap-2">
             <Plus className="w-4 h-4" />
-            Novo Produto
+            <span className="hidden sm:inline">Novo Produto</span>
           </Button>
         </div>
       </div>
@@ -88,21 +88,21 @@ export default function ProductsPage() {
           />
         </div>
         <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-          <SelectTrigger className="w-40"><SelectValue placeholder="Categoria" /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-40"><SelectValue placeholder="Categoria" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todas Categorias</SelectItem>
             {categories.map(c => <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>)}
           </SelectContent>
         </Select>
         <Select value={brandFilter} onValueChange={setBrandFilter}>
-          <SelectTrigger className="w-40"><SelectValue placeholder="Marca" /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-40"><SelectValue placeholder="Marca" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todas Marcas</SelectItem>
             {brands.map(b => <SelectItem key={b} value={b}>{b}</SelectItem>)}
           </SelectContent>
         </Select>
         <Select value={stockFilter} onValueChange={v => setStockFilter(v as StockFilter)}>
-          <SelectTrigger className="w-40"><SelectValue placeholder="Estoque" /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-40"><SelectValue placeholder="Estoque" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todos Status</SelectItem>
             <SelectItem value="critical">🔴 Esgotado</SelectItem>
@@ -119,42 +119,52 @@ export default function ProductsPage() {
           const totalQty = product.variants.reduce((s, v) => s + v.currentStock, 0);
           return (
             <div key={product.id} className="glass-card rounded-xl overflow-hidden">
-              <div className="w-full p-5 flex items-center justify-between">
-                <button
-                  onClick={() => setExpandedId(isExpanded ? null : product.id)}
-                  className="flex items-center gap-4 min-w-0 flex-1 text-left hover:opacity-80 transition-opacity"
-                >
-                  {product.imageUrl ? (
-                    <img src={product.imageUrl} alt={product.name} className="w-10 h-10 rounded-lg object-cover shrink-0" />
-                  ) : (
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                      <span className="text-xs font-bold text-primary">{product.reference.split('-')[0]}</span>
+              <div className="w-full p-4 sm:p-5">
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <button
+                    onClick={() => setExpandedId(isExpanded ? null : product.id)}
+                    className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1 text-left hover:opacity-80 transition-opacity"
+                  >
+                    {product.imageUrl ? (
+                      <img src={product.imageUrl} alt={product.name} className="w-10 h-10 rounded-lg object-cover shrink-0" />
+                    ) : (
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <span className="text-xs font-bold text-primary">{product.reference.split('-')[0]}</span>
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="font-semibold truncate text-sm sm:text-base">{product.name}</h3>
+                        <span className="text-xs bg-muted px-2 py-0.5 rounded-full text-muted-foreground hidden sm:inline">{product.reference}</span>
+                      </div>
+                      <p className="text-xs sm:text-sm text-muted-foreground truncate">
+                        {product.brand} · {product.category} · R$ {product.salePrice.toFixed(2)}
+                        <span className="hidden sm:inline"> · Mín: {product.minStockThreshold} un.</span>
+                      </p>
                     </div>
-                  )}
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-semibold truncate">{product.name}</h3>
-                      <span className="text-xs bg-muted px-2 py-0.5 rounded-full text-muted-foreground">{product.reference}</span>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {product.brand} · {product.category} · R$ {product.salePrice.toFixed(2)} · Mín: {product.minStockThreshold} un.
-                    </p>
+                  </button>
+                  <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+                    <span className={`text-xs sm:text-sm font-bold px-2 sm:px-3 py-1 rounded-full ${
+                      totalQty === 0 
+                        ? 'bg-destructive/10 text-destructive' 
+                        : totalQty <= 10 
+                          ? 'bg-warning/10 text-warning' 
+                          : 'bg-success/10 text-success'
+                    }`}>
+                      {totalQty}
+                    </span>
+                    <button onClick={() => setExpandedId(isExpanded ? null : product.id)}>
+                      {isExpanded ? <ChevronUp className="w-5 h-5 text-muted-foreground" /> : <ChevronDown className="w-5 h-5 text-muted-foreground" />}
+                    </button>
                   </div>
-                </button>
-                <div className="flex items-center gap-2 shrink-0">
-                  <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary" onClick={() => setEditProduct(product)}>
-                    <Pencil className="w-4 h-4" />
-                  </Button>
-                  <span className={`text-sm font-bold px-3 py-1 rounded-full ${
-                    totalQty === 0 
-                      ? 'bg-destructive/10 text-destructive' 
-                      : totalQty <= 10 
-                        ? 'bg-warning/10 text-warning' 
-                        : 'bg-success/10 text-success'
-                  }`}>
-                    {totalQty} peças
-                  </span>
-                  <AlertDialog>
+                </div>
+                {/* Action buttons row - visible on expand or on desktop */}
+                {isExpanded && (
+                  <div className="flex items-center gap-2 mt-2 pt-2 border-t border-border/50 sm:border-0 sm:pt-0 sm:mt-0">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary" onClick={() => setEditProduct(product)}>
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                    <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive">
                         <Trash2 className="w-4 h-4" />
@@ -174,11 +184,9 @@ export default function ProductsPage() {
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
-                  </AlertDialog>
-                  <button onClick={() => setExpandedId(isExpanded ? null : product.id)}>
-                    {isExpanded ? <ChevronUp className="w-5 h-5 text-muted-foreground" /> : <ChevronDown className="w-5 h-5 text-muted-foreground" />}
-                  </button>
-                </div>
+                    </AlertDialog>
+                  </div>
+                )}
               </div>
               {isExpanded && (
                 <div className="px-5 pb-5 border-t border-border">

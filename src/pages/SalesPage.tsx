@@ -547,9 +547,9 @@ export default function SalesPage() {
                 {cart.map((item, index) => (
                   <div
                     key={item.variant.id}
-                    className="flex items-center gap-2 px-4 py-2.5 hover:bg-muted/20 transition-colors"
+                    className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2.5 hover:bg-muted/20 transition-colors"
                   >
-                    <span className="text-[11px] text-muted-foreground w-4 shrink-0 text-center">
+                    <span className="text-[11px] text-muted-foreground w-4 shrink-0 text-center hidden sm:block">
                       {index + 1}
                     </span>
                     <div className="flex-1 min-w-0">
@@ -566,9 +566,9 @@ export default function SalesPage() {
                     <div className="flex items-center gap-0.5 shrink-0">
                       <button
                         onClick={() => updateQuantity(item.variant.id, -1)}
-                        className="w-8 h-8 rounded-lg bg-muted/60 border border-border flex items-center justify-center hover:bg-muted active:scale-95 transition-all"
+                        className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-muted/60 border border-border flex items-center justify-center hover:bg-muted active:scale-95 transition-all"
                       >
-                        <Minus className="w-3.5 h-3.5" />
+                        <Minus className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                       </button>
                       <input
                         type="text"
@@ -604,21 +604,21 @@ export default function SalesPage() {
                             );
                           }
                         }}
-                        className="w-10 text-center font-mono font-bold bg-transparent h-8 text-sm focus:ring-0 border-none"
+                        className="w-8 sm:w-10 text-center font-mono font-bold bg-transparent h-7 sm:h-8 text-sm focus:ring-0 border-none"
                       />
                       <button
                         onClick={() => updateQuantity(item.variant.id, 1)}
-                        className="w-8 h-8 rounded-lg bg-muted/60 border border-border flex items-center justify-center hover:bg-muted active:scale-95 transition-all"
+                        className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-muted/60 border border-border flex items-center justify-center hover:bg-muted active:scale-95 transition-all"
                       >
-                        <Plus className="w-3.5 h-3.5" />
+                        <Plus className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                       </button>
                     </div>
-                    <span className="text-sm font-bold w-20 text-right font-mono tabular-nums shrink-0">
+                    <span className="text-sm font-bold w-16 sm:w-20 text-right font-mono tabular-nums shrink-0 hidden sm:block">
                       R$ {(item.product.salePrice * item.quantity).toFixed(2)}
                     </span>
                     <button
                       onClick={() => removeItem(item.variant.id)}
-                      className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors shrink-0"
+                      className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors shrink-0"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -666,31 +666,33 @@ export default function SalesPage() {
               onClick={() => startPayment("cash")}
               disabled={cart.length === 0}
               variant="outline"
-              className="h-12 gap-2 text-sm font-semibold"
+              className="h-11 sm:h-12 gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold"
             >
-              <Banknote className="w-5 h-5" />
-              Dinheiro
-              <span className="text-[10px] opacity-50 ml-0.5">F1</span>
+              <Banknote className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="hidden sm:inline">Dinheiro</span>
+              <span className="sm:hidden">Din.</span>
+              <span className="text-[10px] opacity-50 ml-0.5 hidden sm:inline">F1</span>
             </Button>
             <Button
               onClick={() => handleFinalizeSale("card")}
               disabled={cart.length === 0}
               variant="outline"
-              className="h-12 gap-2 text-sm font-semibold"
+              className="h-11 sm:h-12 gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold"
             >
-              <CreditCard className="w-5 h-5" />
-              Cartão
-              <span className="text-[10px] opacity-50 ml-0.5">F2</span>
+              <CreditCard className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="hidden sm:inline">Cartão</span>
+              <span className="sm:hidden">Cart.</span>
+              <span className="text-[10px] opacity-50 ml-0.5 hidden sm:inline">F2</span>
             </Button>
             <Button
               onClick={() => handleFinalizeSale("pix")}
               disabled={cart.length === 0}
               variant="outline"
-              className="h-12 gap-2 text-sm font-semibold"
+              className="h-11 sm:h-12 gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold"
             >
-              <Smartphone className="w-5 h-5" />
+              <Smartphone className="w-4 h-4 sm:w-5 sm:h-5" />
               PIX
-              <span className="text-[10px] opacity-50 ml-0.5">F3</span>
+              <span className="text-[10px] opacity-50 ml-0.5 hidden sm:inline">F3</span>
             </Button>
           </div>
         ) : (

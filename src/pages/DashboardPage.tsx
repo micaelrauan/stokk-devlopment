@@ -77,7 +77,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-heading font-bold text-foreground">Dashboard</h1>
+        <h1 className="text-2xl sm:text-3xl font-heading font-bold text-foreground">Dashboard</h1>
         <p className="text-muted-foreground mt-1">Visão geral do seu estoque</p>
       </div>
 
@@ -88,7 +88,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">{stat.label}</p>
-                <p className="text-3xl font-heading font-bold mt-1">{stat.value}</p>
+                <p className="text-2xl sm:text-3xl font-heading font-bold mt-1">{stat.value}</p>
               </div>
               <div className={`w-12 h-12 rounded-xl ${stat.color} flex items-center justify-center`}>
                 <stat.icon className="w-6 h-6" />
@@ -160,7 +160,7 @@ export default function DashboardPage() {
               <BarChart data={topMovement} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis type="number" fontSize={11} />
-                <YAxis type="category" dataKey="name" width={120} fontSize={11} tick={{ fill: 'hsl(var(--muted-foreground))' }} />
+                <YAxis type="category" dataKey="name" width={80} fontSize={10} tick={{ fill: 'hsl(var(--muted-foreground))' }} />
                 <Tooltip />
                 <Bar dataKey="total" name="Saídas" fill="hsl(var(--accent))" radius={[0, 4, 4, 0]} />
               </BarChart>

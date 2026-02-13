@@ -415,7 +415,7 @@ export default function OperationsPage() {
             {scannedItems.map((item) => (
               <div
                 key={item.variant.id}
-                className="flex items-center gap-3 px-4 py-2.5 hover:bg-muted/20 transition-colors"
+                className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 hover:bg-muted/20 transition-colors"
               >
                 {/* Product info */}
                 <div className="flex-1 min-w-0">
@@ -481,13 +481,13 @@ export default function OperationsPage() {
                   </button>
                 </div>
                 {/* Value */}
-                <span className="text-sm font-bold w-20 text-right font-mono tabular-nums">
+                <span className="text-sm font-bold w-16 sm:w-20 text-right font-mono tabular-nums hidden sm:block">
                   R$ {(item.product.salePrice * item.quantity).toFixed(2)}
                 </span>
                 {/* Remove */}
                 <button
                   onClick={() => removeItem(item.variant.id)}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors shrink-0"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
