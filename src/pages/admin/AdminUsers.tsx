@@ -173,8 +173,15 @@ export default function AdminUsers() {
       return;
     }
     // Client-side password strength validation
-    if (newPassword.length < 8 || !/[A-Z]/.test(newPassword) || !/[a-z]/.test(newPassword) || !/[0-9]/.test(newPassword)) {
-      toast.error("Senha deve ter no mínimo 8 caracteres com maiúscula, minúscula e número");
+    if (
+      newPassword.length < 8 ||
+      !/[A-Z]/.test(newPassword) ||
+      !/[a-z]/.test(newPassword) ||
+      !/[0-9]/.test(newPassword)
+    ) {
+      toast.error(
+        "Senha deve ter no mínimo 8 caracteres com maiúscula, minúscula e número",
+      );
       return;
     }
     // Email validation
@@ -212,7 +219,7 @@ export default function AdminUsers() {
             plan: newPlan,
             provider: newProvider,
           }),
-        }
+        },
       );
 
       const result = await createRes.json();
@@ -315,8 +322,16 @@ export default function AdminUsers() {
     const passwordChanged = editPassword.length > 0;
 
     // Client-side password strength check
-    if (passwordChanged && (editPassword.length < 8 || !/[A-Z]/.test(editPassword) || !/[a-z]/.test(editPassword) || !/[0-9]/.test(editPassword))) {
-      toast.error("Senha deve ter no mínimo 8 caracteres com maiúscula, minúscula e número");
+    if (
+      passwordChanged &&
+      (editPassword.length < 8 ||
+        !/[A-Z]/.test(editPassword) ||
+        !/[a-z]/.test(editPassword) ||
+        !/[0-9]/.test(editPassword))
+    ) {
+      toast.error(
+        "Senha deve ter no mínimo 8 caracteres com maiúscula, minúscula e número",
+      );
       return;
     }
 

@@ -141,14 +141,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signOut,
       refreshProfile,
     }),
-    [session, user, profile, isAdmin, loading, signIn, signUp, signOut, refreshProfile],
+    [
+      session,
+      user,
+      profile,
+      isAdmin,
+      loading,
+      signIn,
+      signUp,
+      signOut,
+      refreshProfile,
+    ],
   );
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

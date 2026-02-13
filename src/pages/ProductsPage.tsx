@@ -37,7 +37,8 @@ import EditProductDialog from "@/components/EditProductDialog";
 import ManageCategoriesDialog from "@/components/ManageCategoriesDialog";
 import ManageColorsDialog from "@/components/ManageColorsDialog";
 import ManageSizesDialog from "@/components/ManageSizesDialog";
-import { Package } from "lucide-react";
+import ProductDetailsDialog from "@/components/ProductDetailsDialog";
+import { Package, Eye } from "lucide-react";
 import { Product } from "@/types/inventory";
 
 type StockFilter = "all" | "critical" | "low" | "ok" | "excess";
@@ -54,36 +55,44 @@ export default function ProductsPage() {
   const [showColors, setShowColors] = useState(false);
   const [showSizes, setShowSizes] = useState(false);
   const [editProduct, setEditProduct] = useState<Product | null>(null);
-  const brands = useMemo(() => [...new Set(products.map((p) => p.brand))], [products]);
+  const [detailProduct, setDetailProduct] = useState<Product | null>(null);
+  const brands = useMemo(
+    () => [...new Set(products.map((p) => p.brand))],
+    [products],
+  );
 
-  const filtered = useMemo(() => products.filter((p) => {
-    const matchesSearch =
-      p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.reference.toLowerCase().includes(search.toLowerCase()) ||
-      p.category.toLowerCase().includes(search.toLowerCase()) ||
-      p.brand.toLowerCase().includes(search.toLowerCase());
+  const filtered = useMemo(
+    () =>
+      products.filter((p) => {
+        const matchesSearch =
+          p.name.toLowerCase().includes(search.toLowerCase()) ||
+          p.reference.toLowerCase().includes(search.toLowerCase()) ||
+          p.category.toLowerCase().includes(search.toLowerCase()) ||
+          p.brand.toLowerCase().includes(search.toLowerCase());
 
-    const matchesCategory =
-      categoryFilter === "all" || p.category === categoryFilter;
-    const matchesBrand = brandFilter === "all" || p.brand === brandFilter;
+        const matchesCategory =
+          categoryFilter === "all" || p.category === categoryFilter;
+        const matchesBrand = brandFilter === "all" || p.brand === brandFilter;
 
-    const totalQty = p.variants.reduce((s, v) => s + v.currentStock, 0);
-    let matchesStock = true;
-    if (stockFilter === "critical")
-      matchesStock = p.variants.some((v) => v.currentStock === 0);
-    else if (stockFilter === "low")
-      matchesStock = p.variants.some(
-        (v) => v.currentStock > 0 && v.currentStock <= p.minStockThreshold,
-      );
-    else if (stockFilter === "ok")
-      matchesStock =
-        totalQty > 0 &&
-        !p.variants.some((v) => v.currentStock <= p.minStockThreshold);
-    else if (stockFilter === "excess")
-      matchesStock = totalQty > p.variants.length * 20;
+        const totalQty = p.variants.reduce((s, v) => s + v.currentStock, 0);
+        let matchesStock = true;
+        if (stockFilter === "critical")
+          matchesStock = p.variants.some((v) => v.currentStock === 0);
+        else if (stockFilter === "low")
+          matchesStock = p.variants.some(
+            (v) => v.currentStock > 0 && v.currentStock <= p.minStockThreshold,
+          );
+        else if (stockFilter === "ok")
+          matchesStock =
+            totalQty > 0 &&
+            !p.variants.some((v) => v.currentStock <= p.minStockThreshold);
+        else if (stockFilter === "excess")
+          matchesStock = totalQty > p.variants.length * 20;
 
-    return matchesSearch && matchesCategory && matchesBrand && matchesStock;
-  }), [products, search, categoryFilter, brandFilter, stockFilter]);
+        return matchesSearch && matchesCategory && matchesBrand && matchesStock;
+      }),
+    [products, search, categoryFilter, brandFilter, stockFilter],
+  );
 
   return (
     <div className="space-y-6">
@@ -250,6 +259,13 @@ export default function ProductsPage() {
                       {totalQty}
                     </span>
                     <button
+                      onClick={() => setDetailProduct(product)}
+                      className="p-1 rounded-md hover:bg-muted transition-colors"
+                      title="Ver detalhes"
+                    >
+                      <Eye className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
+                    </button>
+                    <button
                       onClick={() =>
                         setExpandedId(isExpanded ? null : product.id)
                       }
@@ -338,6 +354,13 @@ export default function ProductsPage() {
         open={!!editProduct}
         onOpenChange={(open) => {
           if (!open) setEditProduct(null);
+        }}
+      />
+      <ProductDetailsDialog
+        product={detailProduct}
+        open={!!detailProduct}
+        onOpenChange={(open) => {
+          if (!open) setDetailProduct(null);
         }}
       />
     </div>

@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import ProductDetailsDialog from "@/components/ProductDetailsDialog";
+import { Product } from "@/types/inventory";
 
 type SortField = "name" | "stock" | "category" | "color" | "size";
 type SortDir = "asc" | "desc";
@@ -50,6 +52,7 @@ export default function StockPage() {
   const [sortField, setSortField] = useState<SortField>("name");
   const [sortDir, setSortDir] = useState<SortDir>("asc");
   const [showFilters, setShowFilters] = useState(false);
+  const [detailProduct, setDetailProduct] = useState<Product | null>(null);
 
   const allVariants: FlatVariant[] = useMemo(() => {
     return products.flatMap((p) =>
@@ -383,7 +386,13 @@ export default function StockPage() {
                 >
                   {/* Produto */}
                   <td className="py-2 px-3">
-                    <div className="flex items-center gap-2.5">
+                    <div
+                      className="flex items-center gap-2.5 cursor-pointer hover:opacity-80 transition-opacity"
+                      onClick={() => {
+                        const p = products.find((p) => p.id === v.productId);
+                        if (p) setDetailProduct(p);
+                      }}
+                    >
                       {v.imageUrl ? (
                         <img
                           src={v.imageUrl}
@@ -457,6 +466,13 @@ export default function StockPage() {
           </div>
         )}
       </div>
+      <ProductDetailsDialog
+        product={detailProduct}
+        open={!!detailProduct}
+        onOpenChange={(open) => {
+          if (!open) setDetailProduct(null);
+        }}
+      />
     </div>
   );
 }

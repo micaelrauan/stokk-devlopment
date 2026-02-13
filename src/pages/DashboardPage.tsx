@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   Package,
   ShoppingBag,
@@ -8,6 +8,8 @@ import {
   Activity,
 } from "lucide-react";
 import { useInventoryContext } from "@/contexts/InventoryContext";
+import ProductDetailsDialog from "@/components/ProductDetailsDialog";
+import { Product } from "@/types/inventory";
 import {
   PieChart,
   Pie,
@@ -48,34 +50,42 @@ export default function DashboardPage() {
     inventoryLogs,
   } = useInventoryContext();
 
-  const stats = useMemo(() => [
-    {
-      label: "Produtos",
-      value: totalProducts,
-      icon: Package,
-      color: "bg-info/10 text-info",
-    },
-    {
-      label: "Peças em Estoque",
-      value: totalItems,
-      icon: ShoppingBag,
-      color: "bg-success/10 text-success",
-    },
-    {
-      label: "Estoque Baixo",
-      value: lowStockCount,
-      icon: AlertTriangle,
-      color: "bg-warning/10 text-warning",
-    },
-    {
-      label: "Esgotados",
-      value: outOfStockCount,
-      icon: XCircle,
-      color: "bg-destructive/10 text-destructive",
-    },
-  ], [totalProducts, totalItems, lowStockCount, outOfStockCount]);
+  const [detailProduct, setDetailProduct] = useState<Product | null>(null);
 
-  const recentAlerts = useMemo(() => alerts.filter((a) => !a.read).slice(0, 5), [alerts]);
+  const stats = useMemo(
+    () => [
+      {
+        label: "Produtos",
+        value: totalProducts,
+        icon: Package,
+        color: "bg-info/10 text-info",
+      },
+      {
+        label: "Peças em Estoque",
+        value: totalItems,
+        icon: ShoppingBag,
+        color: "bg-success/10 text-success",
+      },
+      {
+        label: "Estoque Baixo",
+        value: lowStockCount,
+        icon: AlertTriangle,
+        color: "bg-warning/10 text-warning",
+      },
+      {
+        label: "Esgotados",
+        value: outOfStockCount,
+        icon: XCircle,
+        color: "bg-destructive/10 text-destructive",
+      },
+    ],
+    [totalProducts, totalItems, lowStockCount, outOfStockCount],
+  );
+
+  const recentAlerts = useMemo(
+    () => alerts.filter((a) => !a.read).slice(0, 5),
+    [alerts],
+  );
 
   // Pie chart: stock value by category
   const categoryData = useMemo(() => {
@@ -422,7 +432,8 @@ export default function DashboardPage() {
                 return (
                   <div
                     key={product.id}
-                    className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
+                    className="flex items-center justify-between p-3 rounded-lg bg-muted/50 cursor-pointer hover:bg-muted/80 transition-colors"
+                    onClick={() => setDetailProduct(product)}
                   >
                     <div className="min-w-0">
                       <p className="text-sm font-medium truncate">
@@ -449,6 +460,13 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+      <ProductDetailsDialog
+        product={detailProduct}
+        open={!!detailProduct}
+        onOpenChange={(open) => {
+          if (!open) setDetailProduct(null);
+        }}
+      />
     </div>
   );
 }

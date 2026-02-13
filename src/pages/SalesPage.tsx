@@ -20,8 +20,10 @@ import {
   ChevronDown,
   User,
   Percent,
+  Eye,
 } from "lucide-react";
 import { Product, ProductVariant, SaleItem } from "@/types/inventory";
+import ProductDetailsDialog from "@/components/ProductDetailsDialog";
 
 interface CartItem {
   product: Product;
@@ -48,6 +50,7 @@ export default function SalesPage() {
   const [paymentMode, setPaymentMode] = useState<PaymentMethod | null>(null);
   const [cashReceived, setCashReceived] = useState("");
   const [success, setSuccess] = useState(false);
+  const [detailProduct, setDetailProduct] = useState<Product | null>(null);
   const [scanFeedback, setScanFeedback] = useState<{
     ok: boolean;
     text: string;
@@ -58,7 +61,9 @@ export default function SalesPage() {
 
   // Refs for stable keyboard handler — avoids stale closures
   const startPaymentRef = useRef<(method: PaymentMethod) => void>(() => {});
-  const handleFinalizeSaleRef = useRef<(method: PaymentMethod) => void>(() => {});
+  const handleFinalizeSaleRef = useRef<(method: PaymentMethod) => void>(
+    () => {},
+  );
 
   // Focus scanner on mount
   useEffect(() => {
@@ -424,6 +429,16 @@ export default function SalesPage() {
                               {available.length} disp.
                             </p>
                           </div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setDetailProduct(product);
+                            }}
+                            className="p-1 rounded-md hover:bg-muted transition-colors shrink-0"
+                            title="Ver detalhes"
+                          >
+                            <Eye className="w-3.5 h-3.5 text-muted-foreground" />
+                          </button>
                           <ChevronDown
                             className={`w-3.5 h-3.5 text-muted-foreground transition-transform ${isExpanded ? "rotate-180" : ""}`}
                           />
@@ -789,6 +804,13 @@ export default function SalesPage() {
           </div>
         )}
       </div>
+      <ProductDetailsDialog
+        product={detailProduct}
+        open={!!detailProduct}
+        onOpenChange={(open) => {
+          if (!open) setDetailProduct(null);
+        }}
+      />
     </div>
   );
 }

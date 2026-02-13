@@ -26,6 +26,8 @@ import {
 import { Sale } from "@/types/inventory";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import ProductDetailsDialog from "@/components/ProductDetailsDialog";
+import { Product } from "@/types/inventory";
 
 const PAYMENT_LABELS: Record<string, { label: string; icon: React.ReactNode }> =
   {
@@ -34,7 +36,7 @@ const PAYMENT_LABELS: Record<string, { label: string; icon: React.ReactNode }> =
     pix: { label: "PIX", icon: <Smartphone className="w-4 h-4" /> },
   };
 
-function SaleRow({ sale }: { sale: Sale }) {
+function SaleRow({ sale, onViewProduct }: { sale: Sale; onViewProduct?: (productId: string) => void }) {
   const [open, setOpen] = useState(false);
   const payment = PAYMENT_LABELS[sale.paymentMethod];
 
@@ -84,12 +86,15 @@ function SaleRow({ sale }: { sale: Sale }) {
             {sale.items.map((item, i) => (
               <div key={i} className="flex items-center gap-2 sm:gap-3 text-sm">
                 <Package className="w-3.5 h-3.5 text-muted-foreground shrink-0 hidden sm:block" />
-                <span className="flex-1 truncate text-xs sm:text-sm">
+                <button
+                  onClick={() => onViewProduct?.(item.productId)}
+                  className="flex-1 truncate text-xs sm:text-sm text-left hover:text-primary transition-colors"
+                >
                   {item.productName}
                   <span className="text-muted-foreground ml-1">
                     ({item.variantLabel})
                   </span>
-                </span>
+                </button>
                 <span className="text-muted-foreground font-mono text-xs hidden md:inline">
                   {item.sku}
                 </span>
@@ -138,10 +143,16 @@ function SaleRow({ sale }: { sale: Sale }) {
 }
 
 export default function SalesHistoryPage() {
-  const { sales } = useInventoryContext();
+  const { sales, products } = useInventoryContext();
   const [search, setSearch] = useState("");
   const [dateFilter, setDateFilter] = useState("");
   const [paymentFilter, setPaymentFilter] = useState<string>("all");
+  const [detailProduct, setDetailProduct] = useState<Product | null>(null);
+
+  const handleViewProduct = (productId: string) => {
+    const p = products.find((p) => p.id === productId);
+    if (p) setDetailProduct(p);
+  };
 
   const filtered = useMemo(() => {
     return sales.filter((s) => {
@@ -252,9 +263,16 @@ export default function SalesHistoryPage() {
             </p>
           </div>
         ) : (
-          filtered.map((sale) => <SaleRow key={sale.id} sale={sale} />)
+          filtered.map((sale) => <SaleRow key={sale.id} sale={sale} onViewProduct={handleViewProduct} />)
         )}
       </div>
+      <ProductDetailsDialog
+        product={detailProduct}
+        open={!!detailProduct}
+        onOpenChange={(open) => {
+          if (!open) setDetailProduct(null);
+        }}
+      />
     </div>
   );
 }

@@ -9,10 +9,13 @@ import {
   XCircle,
   ChevronDown,
   ChevronUp,
+  Eye,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Alert } from "@/types/inventory";
+import ProductDetailsDialog from "@/components/ProductDetailsDialog";
+import { Product } from "@/types/inventory";
 
 type AlertFilter = "all" | "unread" | "low_stock" | "out_of_stock";
 
@@ -26,17 +29,22 @@ interface GroupedAlerts {
 }
 
 const AlertsPage = () => {
-  const { alerts, markAlertRead, markAllAlertsRead, unreadAlerts } =
+  const { alerts, markAlertRead, markAllAlertsRead, unreadAlerts, products } =
     useInventoryContext();
   const [filter, setFilter] = useState<AlertFilter>("all");
   const [expandedProduct, setExpandedProduct] = useState<string | null>(null);
+  const [detailProduct, setDetailProduct] = useState<Product | null>(null);
 
-  const filtered = useMemo(() => alerts.filter((a) => {
-    if (filter === "unread") return !a.read;
-    if (filter === "low_stock") return a.type === "low_stock";
-    if (filter === "out_of_stock") return a.type === "out_of_stock";
-    return true;
-  }), [alerts, filter]);
+  const filtered = useMemo(
+    () =>
+      alerts.filter((a) => {
+        if (filter === "unread") return !a.read;
+        if (filter === "low_stock") return a.type === "low_stock";
+        if (filter === "out_of_stock") return a.type === "out_of_stock";
+        return true;
+      }),
+    [alerts, filter],
+  );
 
   // Group by product
   const grouped = useMemo(() => {
@@ -184,6 +192,17 @@ const AlertsPage = () => {
                   </p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const p = products.find((p) => p.id === group.productId);
+                      if (p) setDetailProduct(p);
+                    }}
+                    className="p-1 rounded-md hover:bg-muted transition-colors"
+                    title="Ver detalhes do produto"
+                  >
+                    <Eye className="w-4 h-4 text-muted-foreground" />
+                  </button>
                   {group.unreadCount > 0 && (
                     <span className="bg-destructive text-destructive-foreground text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
                       {group.unreadCount}
@@ -263,6 +282,13 @@ const AlertsPage = () => {
           </div>
         )}
       </div>
+      <ProductDetailsDialog
+        product={detailProduct}
+        open={!!detailProduct}
+        onOpenChange={(open) => {
+          if (!open) setDetailProduct(null);
+        }}
+      />
     </div>
   );
 };

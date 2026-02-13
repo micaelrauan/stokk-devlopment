@@ -16,10 +16,12 @@ import {
   Package,
   ChevronDown,
   X,
+  Eye,
 } from "lucide-react";
 import { ProductVariant, Product } from "@/types/inventory";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import ProductDetailsDialog from "@/components/ProductDetailsDialog";
 
 interface ScannedItem {
   product: Product;
@@ -47,6 +49,7 @@ export default function OperationsPage() {
   const [shouldFocusScanner, setShouldFocusScanner] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const productSearchRef = useRef<HTMLInputElement>(null);
+  const [detailProduct, setDetailProduct] = useState<Product | null>(null);
 
   // Only focus scanner when explicitly requested (scan, add, finalize)
   useEffect(() => {
@@ -331,6 +334,16 @@ export default function OperationsPage() {
                               var.
                             </p>
                           </div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setDetailProduct(product);
+                            }}
+                            className="p-1 rounded-md hover:bg-muted transition-colors shrink-0"
+                            title="Ver detalhes"
+                          >
+                            <Eye className="w-3.5 h-3.5 text-muted-foreground" />
+                          </button>
                           <ChevronDown
                             className={`w-3.5 h-3.5 text-muted-foreground transition-transform ${
                               isExpanded ? "rotate-180" : ""
@@ -579,6 +592,13 @@ export default function OperationsPage() {
           </div>
         </div>
       )}
+      <ProductDetailsDialog
+        product={detailProduct}
+        open={!!detailProduct}
+        onOpenChange={(open) => {
+          if (!open) setDetailProduct(null);
+        }}
+      />
     </div>
   );
 }

@@ -30,7 +30,7 @@ export interface InventoryLog {
   productId: string;
   productName: string;
   variantLabel: string;
-  type: 'IN' | 'OUT' | 'ADJUST';
+  type: "IN" | "OUT" | "ADJUST";
   quantity: number;
   reason: string;
   timestamp: Date;
@@ -42,7 +42,7 @@ export interface Sale {
   subtotal: number;
   discount: number;
   total: number;
-  paymentMethod: 'cash' | 'card' | 'pix';
+  paymentMethod: "cash" | "card" | "pix";
   cashReceived?: number;
   change?: number;
   customerName?: string;
@@ -61,7 +61,7 @@ export interface SaleItem {
 
 export interface Alert {
   id: string;
-  type: 'low_stock' | 'out_of_stock' | 'new_arrival' | 'price_change';
+  type: "low_stock" | "out_of_stock" | "new_arrival" | "price_change";
   message: string;
   productId: string;
   productName: string;
@@ -162,5 +162,4 @@ export interface SizeItem {
   createdAt: Date;
 }
 
-export const SIZES = ['PP', 'P', 'M', 'G', 'GG', 'XG', 'EG'] as const;
-
+export const SIZES = ["PP", "P", "M", "G", "GG", "XG", "EG"] as const;
