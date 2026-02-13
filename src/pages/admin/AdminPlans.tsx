@@ -6,10 +6,9 @@ import { ChevronRight, Users } from 'lucide-react';
 const from = (table: string) => (supabase as any).from(table);
 
 const plans = [
-  { name: 'Gratuito', key: 'free', price: 'R$ 0', features: ['Até 50 produtos', 'Até 100 vendas/mês', '1 usuário'] },
-  { name: 'Básico', key: 'basic', price: 'R$ 49/mês', features: ['Até 200 produtos', 'Vendas ilimitadas', '3 usuários', 'Relatórios básicos'] },
-  { name: 'Profissional', key: 'pro', price: 'R$ 99/mês', features: ['Até 1.000 produtos', 'Vendas ilimitadas', '10 usuários', 'Relatórios avançados', 'Suporte prioritário'] },
-  { name: 'Premium', key: 'premium', price: 'R$ 199/mês', features: ['Produtos ilimitados', 'Vendas ilimitadas', 'Usuários ilimitados', 'Relatórios avançados', 'Suporte VIP', 'API de integração'] },
+  { name: 'Essencial', key: 'free', price: 'R$ 0', features: ['Até 50 produtos', 'Até 100 vendas/mês', '1 usuário', 'Dashboard básico', 'Alertas de estoque baixo'] },
+  { name: 'Crescimento', key: 'basic', price: 'R$ 79/mês', features: ['Até 500 produtos', 'Vendas ilimitadas', '5 usuários', 'Relatórios avançados', 'Leitor de código de barras', 'Etiquetas', 'Suporte prioritário'] },
+  { name: 'Profissional', key: 'pro', price: 'R$ 149/mês', features: ['Produtos ilimitados', 'Vendas ilimitadas', 'Usuários ilimitados', 'Relatórios + exportação', 'Etiquetas em lote', 'Gestão multi-loja', 'Suporte VIP WhatsApp', 'Consultoria'] },
 ];
 
 export default function AdminPlans() {
@@ -40,9 +39,9 @@ export default function AdminPlans() {
         <h1 className="text-3xl font-heading font-bold">Planos</h1>
         <p className="text-muted-foreground mt-1">Configure os planos disponíveis</p>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {plans.map(plan => (
-          <div key={plan.key} className={`glass-card rounded-xl p-6 ${plan.key === 'premium' ? 'ring-2 ring-warning' : ''}`}>
+          <div key={plan.key} className={`glass-card rounded-xl p-6 ${plan.key === 'pro' ? 'ring-2 ring-warning' : ''}`}>
             <h3 className="font-heading font-bold text-lg">{plan.name}</h3>
             <p className="text-2xl font-heading font-bold mt-2">{plan.price}</p>
             <div className="flex items-center gap-1 mt-2 text-muted-foreground">
