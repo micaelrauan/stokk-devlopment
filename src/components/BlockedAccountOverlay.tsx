@@ -1,6 +1,6 @@
-import { ShieldX, LogOut } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useAuth } from '@/contexts/AuthContext';
+import { ShieldX, LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function BlockedAccountOverlay() {
   const { signOut, profile } = useAuth();
@@ -26,15 +26,20 @@ export default function BlockedAccountOverlay() {
               Conta Bloqueada
             </h2>
             <p className="text-muted-foreground leading-relaxed">
-              Sua conta foi desativada pelo administrador do sistema.
-              Para reativar o acesso, entre em contato com o suporte ou o administrador.
+              Sua conta foi desativada pelo administrador do sistema. Para
+              reativar o acesso, entre em contato com o suporte ou o
+              administrador.
             </p>
           </div>
 
           {/* Contact info hint */}
           <div className="rounded-lg bg-muted/50 border border-border px-4 py-3">
             <p className="text-sm text-muted-foreground">
-              Entre em contato com o <span className="font-semibold text-foreground">administrador do sistema</span> para mais informações sobre o bloqueio da sua conta.
+              Entre em contato com o{" "}
+              <span className="font-semibold text-foreground">
+                administrador do sistema
+              </span>{" "}
+              para mais informações sobre o bloqueio da sua conta.
             </p>
           </div>
 
