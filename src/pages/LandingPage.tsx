@@ -14,11 +14,11 @@ import {
   ShoppingBag,
   ScanBarcode,
   Bell,
-  ChevronRight,
   Mail,
   Instagram,
   Code2,
   MousePointerClick,
+  X,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import logo from "@/assets/logo.png";
@@ -127,71 +127,30 @@ export default function LandingPage() {
     },
   ];
 
-  const plans = [
-    {
-      name: "Essencial",
-      subtitle: "Para quem está começando",
-      price: "R$ 0",
-      period: "/mês",
-      popular: false,
-      gradient: "",
-      cta: "Começar grátis",
-      features: [
-        "Até 50 produtos cadastrados",
-        "Até 100 vendas por mês",
-        "1 usuário",
-        "Dashboard com métricas básicas",
-        "Alertas de estoque baixo",
-      ],
-      excluded: [
-        "Leitor de código de barras",
-        "Impressão de etiquetas",
-        "Suporte prioritário",
-      ],
-    },
-    {
-      name: "Crescimento",
-      subtitle: "Para lojas em expansão",
-      price: "R$ 79",
-      priceOld: "R$ 119",
-      period: "/mês",
-      popular: true,
-      gradient: "bg-gradient-to-br from-foreground to-foreground/80",
-      cta: "Começar 7 dias grátis",
-      features: [
-        "Até 500 produtos cadastrados",
-        "Vendas ilimitadas",
-        "Até 5 usuários",
-        "Relatórios avançados de vendas",
-        "Leitor de código de barras",
-        "Impressão de etiquetas",
-        "Alertas inteligentes",
-        "Suporte prioritário por email",
-      ],
-      excluded: [],
-    },
-    {
-      name: "Profissional",
-      subtitle: "Para operações completas",
-      price: "R$ 149",
-      priceOld: "R$ 199",
-      period: "/mês",
-      popular: false,
-      gradient: "",
-      cta: "Começar 7 dias grátis",
-      features: [
-        "Produtos ilimitados",
-        "Vendas ilimitadas",
-        "Usuários ilimitados",
-        "Relatórios avançados + exportação",
-        "Leitor de código de barras",
-        "Impressão de etiquetas em lote",
-        "Gestão multi-loja",
-        "Suporte VIP via WhatsApp",
-        "Consultoria de implantação",
-      ],
-      excluded: [],
-    },
+  const freeFeatures = [
+    { text: "Até 50 produtos", included: true },
+    { text: "Até 100 vendas por mês", included: true },
+    { text: "1 usuário", included: true },
+    { text: "Dashboard básico", included: true },
+    { text: "Alertas de estoque baixo", included: true },
+    { text: "Leitor de código de barras", included: false },
+    { text: "Impressão de etiquetas", included: false },
+    { text: "Relatórios avançados", included: false },
+    { text: "Vendas ilimitadas", included: false },
+    { text: "Suporte prioritário", included: false },
+  ];
+
+  const proFeatures = [
+    { text: "Produtos ilimitados", included: true },
+    { text: "Vendas ilimitadas", included: true },
+    { text: "Usuários ilimitados", included: true },
+    { text: "Dashboard completo com métricas", included: true },
+    { text: "Alertas inteligentes", included: true },
+    { text: "Leitor de código de barras", included: true },
+    { text: "Impressão de etiquetas em lote", included: true },
+    { text: "Relatórios avançados + exportação", included: true },
+    { text: "Gestão multi-loja", included: true },
+    { text: "Suporte VIP via WhatsApp", included: true },
   ];
 
   const testimonials = [
@@ -460,73 +419,107 @@ export default function LandingPage() {
               Planos
             </span>
             <h2 className="text-3xl md:text-5xl font-heading font-bold mt-3">
-              Invista menos do que um cafezinho por dia
+              Simples assim: grátis ou completo
             </h2>
-            <p className="text-muted-foreground mt-4 text-lg">
-              Todos os planos pagos com <span className="font-semibold text-foreground">7 dias grátis</span> para testar. Cancele quando quiser.
+            <p className="text-muted-foreground mt-4 text-lg max-w-2xl mx-auto">
+              Comece sem pagar nada. Quando sua loja crescer, desbloqueie{" "}
+              <span className="font-semibold text-foreground">tudo</span> por
+              menos de R$ 3 por dia.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto items-start">
-            {plans.map((plan) => (
-              <div
-                key={plan.name}
-                className={`rounded-2xl p-8 relative transition-all duration-300 hover:-translate-y-1 ${
-                  plan.popular
-                    ? `${plan.gradient} text-background shadow-2xl shadow-foreground/10 scale-[1.02]`
-                    : "glass-card hover:shadow-lg"
-                }`}
-              >
-                {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-background text-foreground text-xs font-bold px-4 py-1.5 rounded-full shadow-sm">
-                    ✦ MAIS ESCOLHIDO
-                  </div>
-                )}
-                <h3 className="font-heading font-bold text-xl">{plan.name}</h3>
-                <p className={`text-sm mt-1 ${plan.popular ? 'text-background/60' : 'text-muted-foreground'}`}>{plan.subtitle}</p>
-                <div className="mt-5 flex items-baseline gap-2">
-                  <span className="text-5xl font-heading font-bold tracking-tight">
-                    {plan.price}
-                  </span>
-                  <span
-                    className={`text-sm ${plan.popular ? "text-background/60" : "text-muted-foreground"}`}
-                  >
-                    {plan.period}
-                  </span>
-                </div>
-                {plan.priceOld && (
-                  <p className={`text-sm mt-1 line-through ${plan.popular ? 'text-background/40' : 'text-muted-foreground/60'}`}>
-                    {plan.priceOld}/mês
-                  </p>
-                )}
-                <ul className="mt-8 space-y-3.5">
-                  {plan.features.map((f) => (
-                    <li key={f} className="flex items-center gap-2.5 text-sm">
-                      <CheckCircle2
-                        className={`w-4 h-4 shrink-0 ${plan.popular ? "text-background/70" : "text-emerald-500"}`}
-                      />
-                      {f}
-                    </li>
-                  ))}
-                  {plan.excluded?.map((f) => (
-                    <li key={f} className="flex items-center gap-2.5 text-sm line-through opacity-40">
-                      <CheckCircle2 className="w-4 h-4 shrink-0" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <Button
-                  className={`w-full mt-8 rounded-full h-11 ${plan.popular ? "bg-background text-foreground hover:bg-background/90" : ""}`}
-                  variant={plan.popular ? "secondary" : "outline"}
-                  onClick={() => navigate("/login")}
-                >
-                  {plan.cta}
-                  <ChevronRight className="w-4 h-4 ml-1" />
-                </Button>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto items-start">
+            {/* FREE */}
+            <div className="glass-card rounded-2xl p-8 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              <h3 className="font-heading font-bold text-xl">Grátis</h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                Para conhecer o sistema
+              </p>
+              <div className="mt-5">
+                <span className="text-5xl font-heading font-bold tracking-tight">
+                  R$ 0
+                </span>
+                <span className="text-sm text-muted-foreground ml-1">
+                  /para sempre
+                </span>
               </div>
-            ))}
+              <ul className="mt-8 space-y-3.5">
+                {freeFeatures.map((f) => (
+                  <li
+                    key={f.text}
+                    className={`flex items-center gap-2.5 text-sm ${!f.included ? "line-through opacity-40" : ""}`}
+                  >
+                    {f.included ? (
+                      <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-500" />
+                    ) : (
+                      <X className="w-4 h-4 shrink-0 text-muted-foreground" />
+                    )}
+                    {f.text}
+                  </li>
+                ))}
+              </ul>
+              <Button
+                className="w-full mt-8 rounded-full h-11"
+                variant="outline"
+                onClick={() => navigate("/login")}
+              >
+                Começar grátis
+              </Button>
+            </div>
+
+            {/* PRO */}
+            <div className="rounded-2xl p-8 relative bg-gradient-to-br from-foreground to-foreground/80 text-background shadow-2xl shadow-foreground/10 transition-all duration-300 hover:-translate-y-1 scale-[1.02]">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-background text-foreground text-xs font-bold px-4 py-1.5 rounded-full shadow-sm flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5" />
+                TUDO ILIMITADO
+              </div>
+              <h3 className="font-heading font-bold text-xl">Stokk Pro</h3>
+              <p className="text-sm text-background/60 mt-1">
+                Para quem quer resultado de verdade
+              </p>
+              <div className="mt-5 flex items-baseline gap-2">
+                <span className="text-5xl font-heading font-bold tracking-tight">
+                  R$ 89
+                </span>
+                <span className="text-sm text-background/60">/mês</span>
+              </div>
+              <p className="text-sm text-background/40 line-through mt-1">
+                R$ 149/mês
+              </p>
+              <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-background/10 text-xs font-medium text-background/80">
+                <Zap className="w-3.5 h-3.5" />
+                Economize R$ 720/ano
+              </div>
+              <ul className="mt-8 space-y-3.5">
+                {proFeatures.map((f) => (
+                  <li
+                    key={f.text}
+                    className="flex items-center gap-2.5 text-sm"
+                  >
+                    <CheckCircle2 className="w-4 h-4 shrink-0 text-background/70" />
+                    {f.text}
+                  </li>
+                ))}
+              </ul>
+              <Button
+                className="w-full mt-8 rounded-full h-12 bg-background text-foreground hover:bg-background/90 text-base font-semibold"
+                variant="secondary"
+                onClick={() => navigate("/login")}
+              >
+                Começar 7 dias grátis
+                <ArrowRight className="w-4 h-4 ml-1" />
+              </Button>
+              <p className="text-xs text-background/40 text-center mt-3">
+                Cancele quando quiser. Sem multa.
+              </p>
+            </div>
           </div>
-          <p className="text-center text-sm text-muted-foreground mt-8">
-            Sem fidelidade. Sem taxa de adesão. Sem surpresas.
+
+          <p className="text-center text-sm text-muted-foreground mt-10">
+            Sem fidelidade. Sem taxa de adesão. Sem surpresas.{" "}
+            <span className="font-medium text-foreground">
+              Sua loja merece mais.
+            </span>
           </p>
         </div>
       </section>
