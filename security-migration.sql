@@ -15,7 +15,7 @@ ALTER TABLE public.colors ADD CONSTRAINT colors_name_user_unique UNIQUE (user_id
 ALTER TABLE public.products
   ADD CONSTRAINT products_sale_price_positive CHECK (sale_price >= 0),
   ADD CONSTRAINT products_cost_price_positive CHECK (cost_price >= 0),
-  ADD CONSTRAINT products_min_stock_positive CHECK (min_stock >= 0);
+  ADD CONSTRAINT products_min_stock_positive CHECK (min_stock_threshold >= 0);
 
 ALTER TABLE public.product_variants
   ADD CONSTRAINT variants_stock_non_negative CHECK (current_stock >= 0);
@@ -25,7 +25,7 @@ ALTER TABLE public.sales
 
 ALTER TABLE public.sale_items
   ADD CONSTRAINT sale_items_quantity_positive CHECK (quantity > 0),
-  ADD CONSTRAINT sale_items_price_non_negative CHECK (price >= 0);
+  ADD CONSTRAINT sale_items_price_non_negative CHECK (unit_price >= 0);
 
 -- #3: Add is_active check to RLS policies (blocked accounts)
 -- Products
