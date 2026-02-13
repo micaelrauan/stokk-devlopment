@@ -362,7 +362,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     <ChevronsLeft className="w-3.5 h-3.5" />
                     <span>Recolher</span>
                     <kbd className="ml-auto text-[9px] bg-sidebar-accent px-1 py-0.5 rounded text-sidebar-muted">
-                      ⌘B
+                      Ctrl+B
                     </kbd>
                   </>
                 )}

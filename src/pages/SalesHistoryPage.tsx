@@ -1,28 +1,38 @@
-import { useState, useMemo } from 'react';
-import { useInventoryContext } from '@/contexts/InventoryContext';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { useState, useMemo } from "react";
+import { useInventoryContext } from "@/contexts/InventoryContext";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 import {
-  Search, ChevronDown, ChevronUp, Calendar, Receipt,
-  Banknote, CreditCard, Smartphone, Package, Filter, X,
-} from 'lucide-react';
-import { Sale } from '@/types/inventory';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+  Search,
+  ChevronDown,
+  ChevronUp,
+  Calendar,
+  Receipt,
+  Banknote,
+  CreditCard,
+  Smartphone,
+  Package,
+  Filter,
+  X,
+} from "lucide-react";
+import { Sale } from "@/types/inventory";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
-const PAYMENT_LABELS: Record<string, { label: string; icon: React.ReactNode }> = {
-  cash: { label: 'Dinheiro', icon: <Banknote className="w-4 h-4" /> },
-  card: { label: 'Cartão', icon: <CreditCard className="w-4 h-4" /> },
-  pix: { label: 'PIX', icon: <Smartphone className="w-4 h-4" /> },
-};
+const PAYMENT_LABELS: Record<string, { label: string; icon: React.ReactNode }> =
+  {
+    cash: { label: "Dinheiro", icon: <Banknote className="w-4 h-4" /> },
+    card: { label: "Cartão", icon: <CreditCard className="w-4 h-4" /> },
+    pix: { label: "PIX", icon: <Smartphone className="w-4 h-4" /> },
+  };
 
 function SaleRow({ sale }: { sale: Sale }) {
   const [open, setOpen] = useState(false);
@@ -31,7 +41,7 @@ function SaleRow({ sale }: { sale: Sale }) {
   return (
     <div className="border border-border rounded-lg overflow-hidden">
       <button
-        onClick={() => setOpen(o => !o)}
+        onClick={() => setOpen((o) => !o)}
         className="w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-5 py-3 sm:py-3.5 hover:bg-muted/30 transition-colors text-left"
       >
         <Receipt className="w-4 h-4 text-muted-foreground shrink-0 hidden sm:block" />
@@ -39,7 +49,9 @@ function SaleRow({ sale }: { sale: Sale }) {
           <p className="text-sm font-semibold">
             Venda #{sale.id.slice(-6)}
             {sale.customerName && (
-              <span className="text-muted-foreground font-normal ml-2 hidden sm:inline">— {sale.customerName}</span>
+              <span className="text-muted-foreground font-normal ml-2 hidden sm:inline">
+                — {sale.customerName}
+              </span>
             )}
           </p>
           <p className="text-xs text-muted-foreground">
@@ -47,14 +59,21 @@ function SaleRow({ sale }: { sale: Sale }) {
           </p>
         </div>
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          <Badge variant="outline" className="gap-1 sm:gap-1.5 shrink-0 text-xs">
+          <Badge
+            variant="outline"
+            className="gap-1 sm:gap-1.5 shrink-0 text-xs"
+          >
             {payment.icon}
             <span className="hidden sm:inline">{payment.label}</span>
           </Badge>
           <span className="text-sm font-bold font-mono shrink-0 text-right">
             R$ {sale.total.toFixed(2)}
           </span>
-          {open ? <ChevronUp className="w-4 h-4 shrink-0 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 shrink-0 text-muted-foreground" />}
+          {open ? (
+            <ChevronUp className="w-4 h-4 shrink-0 text-muted-foreground" />
+          ) : (
+            <ChevronDown className="w-4 h-4 shrink-0 text-muted-foreground" />
+          )}
         </div>
       </button>
 
@@ -67,11 +86,19 @@ function SaleRow({ sale }: { sale: Sale }) {
                 <Package className="w-3.5 h-3.5 text-muted-foreground shrink-0 hidden sm:block" />
                 <span className="flex-1 truncate text-xs sm:text-sm">
                   {item.productName}
-                  <span className="text-muted-foreground ml-1">({item.variantLabel})</span>
+                  <span className="text-muted-foreground ml-1">
+                    ({item.variantLabel})
+                  </span>
                 </span>
-                <span className="text-muted-foreground font-mono text-xs hidden md:inline">{item.sku}</span>
-                <span className="font-mono text-xs w-6 sm:w-8 text-center shrink-0">{item.quantity}×</span>
-                <span className="font-mono text-xs sm:text-sm w-20 sm:w-24 text-right shrink-0">R$ {(item.unitPrice * item.quantity).toFixed(2)}</span>
+                <span className="text-muted-foreground font-mono text-xs hidden md:inline">
+                  {item.sku}
+                </span>
+                <span className="font-mono text-xs w-6 sm:w-8 text-center shrink-0">
+                  {item.quantity}×
+                </span>
+                <span className="font-mono text-xs sm:text-sm w-20 sm:w-24 text-right shrink-0">
+                  R$ {(item.unitPrice * item.quantity).toFixed(2)}
+                </span>
               </div>
             ))}
           </div>
@@ -85,18 +112,21 @@ function SaleRow({ sale }: { sale: Sale }) {
             {sale.discount > 0 && (
               <div className="flex justify-between text-destructive">
                 <span>Desconto ({sale.discount}%)</span>
-                <span className="font-mono">- R$ {(sale.subtotal * sale.discount / 100).toFixed(2)}</span>
+                <span className="font-mono">
+                  - R$ {((sale.subtotal * sale.discount) / 100).toFixed(2)}
+                </span>
               </div>
             )}
             <div className="flex justify-between font-bold text-base pt-1">
               <span>Total</span>
               <span className="font-mono">R$ {sale.total.toFixed(2)}</span>
             </div>
-            {sale.paymentMethod === 'cash' && sale.cashReceived != null && (
+            {sale.paymentMethod === "cash" && sale.cashReceived != null && (
               <div className="flex justify-between text-muted-foreground">
                 <span>Recebido / Troco</span>
                 <span className="font-mono">
-                  R$ {sale.cashReceived.toFixed(2)} / R$ {(sale.change ?? 0).toFixed(2)}
+                  R$ {sale.cashReceived.toFixed(2)} / R${" "}
+                  {(sale.change ?? 0).toFixed(2)}
                 </span>
               </div>
             )}
@@ -109,15 +139,16 @@ function SaleRow({ sale }: { sale: Sale }) {
 
 export default function SalesHistoryPage() {
   const { sales } = useInventoryContext();
-  const [search, setSearch] = useState('');
-  const [dateFilter, setDateFilter] = useState('');
-  const [paymentFilter, setPaymentFilter] = useState<string>('all');
+  const [search, setSearch] = useState("");
+  const [dateFilter, setDateFilter] = useState("");
+  const [paymentFilter, setPaymentFilter] = useState<string>("all");
 
   const filtered = useMemo(() => {
-    return sales.filter(s => {
-      if (paymentFilter !== 'all' && s.paymentMethod !== paymentFilter) return false;
+    return sales.filter((s) => {
+      if (paymentFilter !== "all" && s.paymentMethod !== paymentFilter)
+        return false;
       if (dateFilter) {
-        const saleDate = format(s.createdAt, 'yyyy-MM-dd');
+        const saleDate = format(s.createdAt, "yyyy-MM-dd");
         if (saleDate !== dateFilter) return false;
       }
       if (search.trim()) {
@@ -125,7 +156,9 @@ export default function SalesHistoryPage() {
         const matchId = s.id.includes(q);
         const matchCustomer = s.customerName?.toLowerCase().includes(q);
         const matchItem = s.items.some(
-          i => i.productName.toLowerCase().includes(q) || i.sku.toLowerCase().includes(q)
+          (i) =>
+            i.productName.toLowerCase().includes(q) ||
+            i.sku.toLowerCase().includes(q),
         );
         if (!matchId && !matchCustomer && !matchItem) return false;
       }
@@ -134,7 +167,7 @@ export default function SalesHistoryPage() {
   }, [sales, search, dateFilter, paymentFilter]);
 
   const totalFiltered = filtered.reduce((s, sale) => s + sale.total, 0);
-  const hasFilters = search || dateFilter || paymentFilter !== 'all';
+  const hasFilters = search || dateFilter || paymentFilter !== "all";
 
   return (
     <div className="space-y-6">
@@ -153,7 +186,7 @@ export default function SalesHistoryPage() {
           <Input
             placeholder="Buscar por cliente, produto, SKU..."
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={(e) => setSearch(e.target.value)}
             className="pl-10 h-9"
           />
         </div>
@@ -162,7 +195,7 @@ export default function SalesHistoryPage() {
           <Input
             type="date"
             value={dateFilter}
-            onChange={e => setDateFilter(e.target.value)}
+            onChange={(e) => setDateFilter(e.target.value)}
             className="pl-10 h-9 w-full sm:w-44"
           />
         </div>
@@ -182,7 +215,11 @@ export default function SalesHistoryPage() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => { setSearch(''); setDateFilter(''); setPaymentFilter('all'); }}
+            onClick={() => {
+              setSearch("");
+              setDateFilter("");
+              setPaymentFilter("all");
+            }}
             className="h-9 text-xs"
           >
             <X className="w-3 h-3 mr-1" /> Limpar
@@ -194,7 +231,7 @@ export default function SalesHistoryPage() {
       {filtered.length > 0 && (
         <div className="flex items-center gap-6 text-sm">
           <span className="text-muted-foreground">
-            {filtered.length} venda{filtered.length !== 1 ? 's' : ''}
+            {filtered.length} venda{filtered.length !== 1 ? "s" : ""}
           </span>
           <span className="font-bold font-mono">
             Total: R$ {totalFiltered.toFixed(2)}
@@ -209,11 +246,13 @@ export default function SalesHistoryPage() {
             <Receipt className="w-12 h-12 mx-auto mb-3 opacity-15" />
             <p className="font-medium">Nenhuma venda encontrada</p>
             <p className="text-xs mt-1">
-              {hasFilters ? 'Tente ajustar os filtros' : 'As vendas realizadas no PDV aparecerão aqui'}
+              {hasFilters
+                ? "Tente ajustar os filtros"
+                : "As vendas realizadas no PDV aparecerão aqui"}
             </p>
           </div>
         ) : (
-          filtered.map(sale => <SaleRow key={sale.id} sale={sale} />)
+          filtered.map((sale) => <SaleRow key={sale.id} sale={sale} />)
         )}
       </div>
     </div>

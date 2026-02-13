@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { InventoryProvider } from "@/contexts/InventoryContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -46,6 +46,21 @@ const PageLoader = () => (
   </div>
 );
 
+/** Layout route: single InventoryProvider shared across all app pages */
+function AppRouteLayout() {
+  return (
+    <ProtectedRoute>
+      <InventoryProvider>
+        <AppLayout>
+          <Suspense fallback={<PageLoader />}>
+            <Outlet />
+          </Suspense>
+        </AppLayout>
+      </InventoryProvider>
+    </ProtectedRoute>
+  );
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -74,115 +89,19 @@ const App = () => (
                 <Route path="atividade" element={<AdminActivity />} />
               </Route>
 
-              {/* Protected app routes */}
-              <Route
-                path="/dashboard"
-                element={
-                  <ProtectedRoute>
-                    <InventoryProvider>
-                      <AppLayout>
-                        <DashboardPage />
-                      </AppLayout>
-                    </InventoryProvider>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/produtos"
-                element={
-                  <ProtectedRoute>
-                    <InventoryProvider>
-                      <AppLayout>
-                        <ProductsPage />
-                      </AppLayout>
-                    </InventoryProvider>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/vendas"
-                element={
-                  <ProtectedRoute>
-                    <InventoryProvider>
-                      <AppLayout>
-                        <SalesPage />
-                      </AppLayout>
-                    </InventoryProvider>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/historico"
-                element={
-                  <ProtectedRoute>
-                    <InventoryProvider>
-                      <AppLayout>
-                        <SalesHistoryPage />
-                      </AppLayout>
-                    </InventoryProvider>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/estoque"
-                element={
-                  <ProtectedRoute>
-                    <InventoryProvider>
-                      <AppLayout>
-                        <StockPage />
-                      </AppLayout>
-                    </InventoryProvider>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/operacoes"
-                element={
-                  <ProtectedRoute>
-                    <InventoryProvider>
-                      <AppLayout>
-                        <OperationsPage />
-                      </AppLayout>
-                    </InventoryProvider>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/etiquetas"
-                element={
-                  <ProtectedRoute>
-                    <InventoryProvider>
-                      <AppLayout>
-                        <LabelsPage />
-                      </AppLayout>
-                    </InventoryProvider>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/leitor"
-                element={
-                  <ProtectedRoute>
-                    <InventoryProvider>
-                      <AppLayout>
-                        <ReaderPage />
-                      </AppLayout>
-                    </InventoryProvider>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/avisos"
-                element={
-                  <ProtectedRoute>
-                    <InventoryProvider>
-                      <AppLayout>
-                        <AlertsPage />
-                      </AppLayout>
-                    </InventoryProvider>
-                  </ProtectedRoute>
-                }
-              />
+              {/* Protected app routes — single InventoryProvider for all */}
+              <Route element={<AppRouteLayout />}>
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/produtos" element={<ProductsPage />} />
+                <Route path="/vendas" element={<SalesPage />} />
+                <Route path="/historico" element={<SalesHistoryPage />} />
+                <Route path="/estoque" element={<StockPage />} />
+                <Route path="/operacoes" element={<OperationsPage />} />
+                <Route path="/etiquetas" element={<LabelsPage />} />
+                <Route path="/leitor" element={<ReaderPage />} />
+                <Route path="/avisos" element={<AlertsPage />} />
+              </Route>
+
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

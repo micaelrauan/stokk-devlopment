@@ -1,31 +1,40 @@
-import { useState, useRef, useEffect } from 'react';
-import { useInventoryContext } from '@/contexts/InventoryContext';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Printer, Tags, CheckSquare, Square, Search } from 'lucide-react';
-import JsBarcode from 'jsbarcode';
+import { useState, useRef, useEffect } from "react";
+import { useInventoryContext } from "@/contexts/InventoryContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Printer, Tags, CheckSquare, Square, Search } from "lucide-react";
+import JsBarcode from "jsbarcode";
 
 export default function LabelsPage() {
   const { products } = useInventoryContext();
-  const [selectedProductId, setSelectedProductId] = useState<string>('');
+  const [selectedProductId, setSelectedProductId] = useState<string>("");
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
-  const [searchProduct, setSearchProduct] = useState('');
+  const [searchProduct, setSearchProduct] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const selectedProduct = products.find(p => p.id === selectedProductId);
+  const selectedProduct = products.find((p) => p.id === selectedProductId);
 
-  const filteredProducts = products.filter(p =>
-    p.name.toLowerCase().includes(searchProduct.toLowerCase()) ||
-    p.reference.toLowerCase().includes(searchProduct.toLowerCase())
+  const filteredProducts = products.filter(
+    (p) =>
+      p.name.toLowerCase().includes(searchProduct.toLowerCase()) ||
+      p.reference.toLowerCase().includes(searchProduct.toLowerCase()),
   );
 
   const toggleItem = (id: string) => {
-    setSelectedItems(prev => {
-      const next = prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id];
+    setSelectedItems((prev) => {
+      const next = prev.includes(id)
+        ? prev.filter((i) => i !== id)
+        : [...prev, id];
       if (!prev.includes(id) && !quantities[id]) {
-        setQuantities(q => ({ ...q, [id]: 1 }));
+        setQuantities((q) => ({ ...q, [id]: 1 }));
       }
       return next;
     });
@@ -33,47 +42,57 @@ export default function LabelsPage() {
 
   const selectAll = () => {
     if (!selectedProduct) return;
-    const allIds = selectedProduct.variants.map(v => v.id);
+    const allIds = selectedProduct.variants.map((v) => v.id);
     setSelectedItems(allIds);
     const newQty: Record<string, number> = {};
-    allIds.forEach(id => { newQty[id] = quantities[id] || 1; });
-    setQuantities(q => ({ ...q, ...newQty }));
+    allIds.forEach((id) => {
+      newQty[id] = quantities[id] || 1;
+    });
+    setQuantities((q) => ({ ...q, ...newQty }));
   };
 
   const deselectAll = () => setSelectedItems([]);
 
   const setQty = (id: string, qty: number) => {
-    setQuantities(prev => ({ ...prev, [id]: Math.max(1, Math.min(50, qty)) }));
+    setQuantities((prev) => ({
+      ...prev,
+      [id]: Math.max(1, Math.min(50, qty)),
+    }));
   };
 
   useEffect(() => {
-    const canvases = containerRef.current?.querySelectorAll('canvas[data-barcode]');
-    canvases?.forEach(canvas => {
+    const canvases = containerRef.current?.querySelectorAll(
+      "canvas[data-barcode]",
+    );
+    canvases?.forEach((canvas) => {
       const code = (canvas as HTMLCanvasElement).dataset.barcode;
       if (code) {
         try {
           JsBarcode(canvas, code, {
-            format: 'CODE128',
+            format: "CODE128",
             width: 1.2,
             height: 36,
             displayValue: true,
             fontSize: 9,
             margin: 2,
-            background: 'transparent',
+            background: "transparent",
           });
         } catch (e) {
-          console.error('Barcode error:', e);
+          console.error("Barcode error:", e);
         }
       }
     });
   }, [selectedItems, selectedProductId, quantities]);
 
-  const totalLabels = selectedItems.reduce((sum, id) => sum + (quantities[id] || 1), 0);
+  const totalLabels = selectedItems.reduce(
+    (sum, id) => sum + (quantities[id] || 1),
+    0,
+  );
 
   const handlePrint = () => {
     const printContent = containerRef.current;
     if (!printContent) return;
-    const w = window.open('', '', 'width=800,height=600');
+    const w = window.open("", "", "width=800,height=600");
     if (!w) return;
     w.document.write(`
       <html><head><title>Etiquetas - StockWear</title>
@@ -118,8 +137,13 @@ export default function LabelsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-heading font-bold">Gerador de Etiquetas</h1>
-        <p className="text-muted-foreground mt-1">Selecione produtos e variações para gerar etiquetas com código de barras</p>
+        <h1 className="text-2xl sm:text-3xl font-heading font-bold">
+          Gerador de Etiquetas
+        </h1>
+        <p className="text-muted-foreground mt-1">
+          Selecione produtos e variações para gerar etiquetas com código de
+          barras
+        </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -127,8 +151,17 @@ export default function LabelsPage() {
         <div className="lg:col-span-1 space-y-4">
           <div className="rounded-xl border border-border bg-card p-5 space-y-4">
             <h3 className="font-semibold text-sm">1. Selecione o Produto</h3>
-            <Select value={selectedProductId} onValueChange={v => { setSelectedProductId(v); setSelectedItems([]); setQuantities({}); }}>
-              <SelectTrigger><SelectValue placeholder="Escolha um produto" /></SelectTrigger>
+            <Select
+              value={selectedProductId}
+              onValueChange={(v) => {
+                setSelectedProductId(v);
+                setSelectedItems([]);
+                setQuantities({});
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Escolha um produto" />
+              </SelectTrigger>
               <SelectContent>
                 <div className="px-2 pb-2">
                   <div className="relative">
@@ -136,14 +169,16 @@ export default function LabelsPage() {
                     <Input
                       placeholder="Buscar..."
                       value={searchProduct}
-                      onChange={e => setSearchProduct(e.target.value)}
+                      onChange={(e) => setSearchProduct(e.target.value)}
                       className="h-8 pl-7 text-xs"
                     />
                   </div>
                 </div>
-                {filteredProducts.map(p => (
+                {filteredProducts.map((p) => (
                   <SelectItem key={p.id} value={p.id}>
-                    <span className="font-mono text-xs text-muted-foreground mr-2">{p.reference}</span>
+                    <span className="font-mono text-xs text-muted-foreground mr-2">
+                      {p.reference}
+                    </span>
                     {p.name}
                   </SelectItem>
                 ))}
@@ -156,44 +191,73 @@ export default function LabelsPage() {
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold text-sm">2. Variações</h3>
                 <div className="flex gap-1">
-                  <Button variant="ghost" size="sm" onClick={selectAll} className="text-xs h-7 px-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={selectAll}
+                    className="text-xs h-7 px-2"
+                  >
                     <CheckSquare className="w-3 h-3 mr-1" /> Todos
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={deselectAll} className="text-xs h-7 px-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={deselectAll}
+                    className="text-xs h-7 px-2"
+                  >
                     <Square className="w-3 h-3 mr-1" /> Nenhum
                   </Button>
                 </div>
               </div>
 
               <div className="space-y-1.5 max-h-[400px] overflow-y-auto">
-                {selectedProduct.variants.map(variant => {
+                {selectedProduct.variants.map((variant) => {
                   const isSelected = selectedItems.includes(variant.id);
                   return (
                     <div
                       key={variant.id}
                       className={`flex items-center gap-3 p-2.5 rounded-lg border transition-colors cursor-pointer ${
                         isSelected
-                          ? 'border-primary bg-primary/5'
-                          : 'border-border hover:border-primary/30'
+                          ? "border-primary bg-primary/5"
+                          : "border-border hover:border-primary/30"
                       }`}
                       onClick={() => toggleItem(variant.id)}
                     >
-                      <div className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 ${
-                        isSelected ? 'border-primary bg-primary' : 'border-muted-foreground/30'
-                      }`}>
-                        {isSelected && <span className="text-primary-foreground text-[10px] font-bold">✓</span>}
+                      <div
+                        className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 ${
+                          isSelected
+                            ? "border-primary bg-primary"
+                            : "border-muted-foreground/30"
+                        }`}
+                      >
+                        {isSelected && (
+                          <span className="text-primary-foreground text-[10px] font-bold">
+                            ✓
+                          </span>
+                        )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium">{variant.color} · {variant.size}</p>
-                        <p className="text-[10px] text-muted-foreground font-mono">{variant.sku}</p>
+                        <p className="text-xs font-medium">
+                          {variant.color} · {variant.size}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground font-mono">
+                          {variant.sku}
+                        </p>
                       </div>
                       {isSelected && (
-                        <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
-                          <span className="text-[10px] text-muted-foreground">Qtd:</span>
+                        <div
+                          className="flex items-center gap-1"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <span className="text-[10px] text-muted-foreground">
+                            Qtd:
+                          </span>
                           <Input
                             type="number"
                             value={quantities[variant.id] || 1}
-                            onChange={e => setQty(variant.id, parseInt(e.target.value) || 1)}
+                            onChange={(e) =>
+                              setQty(variant.id, parseInt(e.target.value) || 1)
+                            }
                             className="w-14 h-7 text-xs text-center"
                             min={1}
                             max={50}
@@ -209,7 +273,8 @@ export default function LabelsPage() {
                 <div className="pt-2 border-t border-border">
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-xs text-muted-foreground">
-                      {selectedItems.length} variação(ões) · {totalLabels} etiqueta(s)
+                      {selectedItems.length} variação(ões) · {totalLabels}{" "}
+                      etiqueta(s)
                     </span>
                   </div>
                   <Button onClick={handlePrint} className="w-full gap-2">
@@ -228,12 +293,16 @@ export default function LabelsPage() {
             <div className="rounded-xl border border-border bg-card p-5">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold text-sm">Pré-visualização</h3>
-                <span className="text-xs text-muted-foreground">{totalLabels} etiqueta(s)</span>
+                <span className="text-xs text-muted-foreground">
+                  {totalLabels} etiqueta(s)
+                </span>
               </div>
               <div ref={containerRef} className="bg-muted/30 rounded-lg p-4">
                 <div className="labels-grid flex flex-wrap gap-3">
                   {labelsToRender.map(({ variantId, index }) => {
-                    const variant = selectedProduct.variants.find(v => v.id === variantId);
+                    const variant = selectedProduct.variants.find(
+                      (v) => v.id === variantId,
+                    );
                     if (!variant) return null;
                     return (
                       <div
@@ -244,7 +313,9 @@ export default function LabelsPage() {
                         <p className="text-[7px] uppercase tracking-[1.5px] text-muted-foreground mb-0.5">
                           {selectedProduct.brand}
                         </p>
-                        <h4 className="text-[11px] font-semibold truncate">{selectedProduct.name}</h4>
+                        <h4 className="text-[11px] font-semibold truncate">
+                          {selectedProduct.name}
+                        </h4>
                         <p className="text-[9px] text-muted-foreground">
                           {variant.color} · Tam {variant.size}
                         </p>
@@ -268,12 +339,14 @@ export default function LabelsPage() {
               <div className="text-center text-muted-foreground">
                 <Tags className="w-16 h-16 mx-auto mb-4 opacity-20" />
                 <p className="text-lg font-medium">
-                  {!selectedProductId ? 'Selecione um produto' : 'Selecione variações'}
+                  {!selectedProductId
+                    ? "Selecione um produto"
+                    : "Selecione variações"}
                 </p>
                 <p className="text-sm mt-1">
                   {!selectedProductId
-                    ? 'Escolha um produto no painel ao lado para começar.'
-                    : 'Marque as variações que deseja imprimir.'}
+                    ? "Escolha um produto no painel ao lado para começar."
+                    : "Marque as variações que deseja imprimir."}
                 </p>
               </div>
             </div>

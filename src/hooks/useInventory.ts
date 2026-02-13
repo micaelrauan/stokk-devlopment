@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import {
   Product, Alert, ProductVariant, InventoryLog, Sale,
@@ -57,7 +57,7 @@ function mapSale(row: DbSale, items: DbSaleItem[]): Sale {
   };
 }
 
-// Inventory management hook — v3 (multi-tenant)
+// Inventory management hook — v4 (optimized)
 export function useInventory() {
   const [products, setProducts] = useState<Product[]>([]);
   const [alerts, setAlerts] = useState<Alert[]>([]);
@@ -67,6 +67,10 @@ export function useInventory() {
   const [colors, setColors] = useState<ColorItem[]>([]);
   const [sizes, setSizes] = useState<SizeItem[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Ref to always have current products — avoids stale closures in callbacks
+  const productsRef = useRef(products);
+  productsRef.current = products;
 
   const fetchAll = useCallback(async () => {
     setLoading(true);
@@ -93,8 +97,9 @@ export function useInventory() {
 
   useEffect(() => {
     fetchAll();
-    // Auto-refresh every 15 seconds
+    // Auto-refresh every 15 seconds — only when tab is visible
     const interval = setInterval(async () => {
+      if (document.hidden) return;
       const [alertRes, varRes, prodRes] = await Promise.all([
         from('alerts').select('*').order('created_at', { ascending: false }),
         from('product_variants').select('*'),
@@ -159,28 +164,31 @@ export function useInventory() {
       return { ...p, variants: p.variants.map(v => v.id !== variantId ? v : { ...v, currentStock: quantity }), updatedAt: new Date() };
     }));
 
-    const product = products.find(p => p.id === productId);
+    const product = productsRef.current.find(p => p.id === productId);
     const variant = product?.variants.find(v => v.id === variantId);
     if (product && variant) {
+      const userId = (await supabase.auth.getUser()).data.user?.id;
       if (quantity === 0) {
-        await from('alerts').insert({ type: 'out_of_stock', message: `${product.name} - ${variant.color} ${variant.size} está esgotado`, product_id: productId, product_name: product.name, reference: product.reference, user_id: (await supabase.auth.getUser()).data.user?.id });
+        await from('alerts').insert({ type: 'out_of_stock', message: `${product.name} - ${variant.color} ${variant.size} está esgotado`, product_id: productId, product_name: product.name, reference: product.reference, user_id: userId });
       } else if (quantity < product.minStockThreshold) {
-        await from('alerts').insert({ type: 'low_stock', message: `${product.name} - ${variant.color} ${variant.size} com estoque baixo (${quantity}/${product.minStockThreshold} un.)`, product_id: productId, product_name: product.name, reference: product.reference, user_id: (await supabase.auth.getUser()).data.user?.id });
+        await from('alerts').insert({ type: 'low_stock', message: `${product.name} - ${variant.color} ${variant.size} com estoque baixo (${quantity}/${product.minStockThreshold} un.)`, product_id: productId, product_name: product.name, reference: product.reference, user_id: userId });
       }
     }
-  }, [products]);
+  }, []);
 
   const processOperation = useCallback(async (
     items: { productId: string; variantId: string; quantity: number }[],
     type: 'IN' | 'OUT' | 'ADJUST', reason: string,
   ) => {
+    // Get user once before the loop — avoids N network round-trips
+    const currentUserId = (await supabase.auth.getUser()).data.user?.id;
+
     for (const item of items) {
-      const product = products.find(p => p.id === item.productId);
+      const product = productsRef.current.find(p => p.id === item.productId);
       const variant = product?.variants.find(v => v.id === item.variantId);
       if (!product || !variant) continue;
 
       let newStock = variant.currentStock;
-      const currentUserId = (await supabase.auth.getUser()).data.user?.id;
       if (type === 'IN') newStock += item.quantity;
       else if (type === 'OUT') newStock = Math.max(0, newStock - item.quantity);
       else newStock = Math.max(0, newStock + item.quantity);
@@ -200,7 +208,7 @@ export function useInventory() {
       }
     }
     await fetchAll();
-  }, [products, fetchAll]);
+  }, [fetchAll]);
 
   const registerSale = useCallback(async (sale: Omit<Sale, 'id' | 'createdAt'>) => {
     const currentUserId = (await supabase.auth.getUser()).data.user?.id;
@@ -310,12 +318,15 @@ export function useInventory() {
   }, [products]);
 
   const totalProducts = products.length;
-  const totalItems = products.reduce((sum, p) => sum + p.variants.reduce((s, v) => s + v.currentStock, 0), 0);
-  const lowStockCount = products.reduce((sum, p) => sum + p.variants.filter(v => v.currentStock > 0 && v.currentStock < p.minStockThreshold).length, 0);
-  const outOfStockCount = products.reduce((sum, p) => sum + p.variants.filter(v => v.currentStock === 0).length, 0);
-  const unreadAlerts = alerts.filter(a => !a.read).length;
-  const todaySales = sales.filter(s => s.createdAt.toDateString() === new Date().toDateString());
-  const todayRevenue = todaySales.reduce((sum, s) => sum + s.total, 0);
+  const totalItems = useMemo(() => products.reduce((sum, p) => sum + p.variants.reduce((s, v) => s + v.currentStock, 0), 0), [products]);
+  const lowStockCount = useMemo(() => products.reduce((sum, p) => sum + p.variants.filter(v => v.currentStock > 0 && v.currentStock < p.minStockThreshold).length, 0), [products]);
+  const outOfStockCount = useMemo(() => products.reduce((sum, p) => sum + p.variants.filter(v => v.currentStock === 0).length, 0), [products]);
+  const unreadAlerts = useMemo(() => alerts.filter(a => !a.read).length, [alerts]);
+  const todaySales = useMemo(() => {
+    const today = new Date().toDateString();
+    return sales.filter(s => s.createdAt.toDateString() === today);
+  }, [sales]);
+  const todayRevenue = useMemo(() => todaySales.reduce((sum, s) => sum + s.total, 0), [todaySales]);
 
   return {
     products, alerts, inventoryLogs, sales, categories, colors, sizes, loading,

@@ -5,6 +5,7 @@ import {
   useState,
   ReactNode,
   useCallback,
+  useMemo,
 } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Session, User } from "@supabase/supabase-js";
@@ -70,14 +71,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    let profileFetched = false;
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
-      if (session?.user) {
+      if (session?.user && !profileFetched) {
+        profileFetched = true;
         setTimeout(() => fetchProfile(session.user.id), 0);
-      } else {
+      } else if (!session?.user) {
         setProfile(null);
         setIsAdmin(false);
       }
@@ -87,7 +91,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      if (session?.user) {
+      if (session?.user && !profileFetched) {
+        profileFetched = true;
         fetchProfile(session.user.id);
       }
       setLoading(false);
@@ -96,47 +101,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, [fetchProfile]);
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = useCallback(async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
     return { error: error?.message ?? null };
-  };
+  }, []);
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = useCallback(async (email: string, password: string) => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: { emailRedirectTo: window.location.origin },
     });
     return { error: error?.message ?? null };
-  };
+  }, []);
 
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
     await supabase.auth.signOut();
     setProfile(null);
     setIsAdmin(false);
-  };
+  }, []);
 
-  const refreshProfile = async () => {
+  const refreshProfile = useCallback(async () => {
     if (user) await fetchProfile(user.id);
-  };
+  }, [user, fetchProfile]);
+
+  const value = useMemo(
+    () => ({
+      session,
+      user,
+      profile,
+      isAdmin,
+      loading,
+      signIn,
+      signUp,
+      signOut,
+      refreshProfile,
+    }),
+    [session, user, profile, isAdmin, loading, signIn, signUp, signOut, refreshProfile],
+  );
 
   return (
-    <AuthContext.Provider
-      value={{
-        session,
-        user,
-        profile,
-        isAdmin,
-        loading,
-        signIn,
-        signUp,
-        signOut,
-        refreshProfile,
-      }}
-    >
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

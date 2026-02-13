@@ -31,17 +31,19 @@ function useCountUp(target: number, duration = 2000) {
   const started = useRef(false);
 
   useEffect(() => {
+    let timer: ReturnType<typeof setInterval> | null = null;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting && !started.current) {
           started.current = true;
           const step = target / (duration / 16);
           let current = 0;
-          const timer = setInterval(() => {
+          timer = setInterval(() => {
             current += step;
             if (current >= target) {
               setCount(target);
-              clearInterval(timer);
+              if (timer) clearInterval(timer);
+              timer = null;
             } else {
               setCount(Math.floor(current));
             }
@@ -51,7 +53,10 @@ function useCountUp(target: number, duration = 2000) {
       { threshold: 0.3 },
     );
     if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (timer) clearInterval(timer);
+    };
   }, [target, duration]);
 
   return { count, ref };
@@ -217,11 +222,15 @@ export default function LandingPage() {
           </nav>
           <div className="flex items-center gap-2 sm:gap-3">
             <button
-              onClick={() => setMobileMenuOpen(v => !v)}
+              onClick={() => setMobileMenuOpen((v) => !v)}
               className="md:hidden p-2 rounded-lg hover:bg-muted transition-colors"
               aria-label="Menu"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? (
+                <X className="w-5 h-5" />
+              ) : (
+                <Menu className="w-5 h-5" />
+              )}
             </button>
             <Button
               variant="ghost"
@@ -246,22 +255,41 @@ export default function LandingPage() {
         {/* Mobile menu */}
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-border bg-background/95 backdrop-blur-xl px-6 py-4 space-y-3 animate-in slide-in-from-top-2 duration-200">
-            <a href="#features" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-muted-foreground hover:text-foreground transition-colors py-2">
+            <a
+              href="#features"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-sm text-muted-foreground hover:text-foreground transition-colors py-2"
+            >
               Recursos
             </a>
-            <a href="#how" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-muted-foreground hover:text-foreground transition-colors py-2">
+            <a
+              href="#how"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-sm text-muted-foreground hover:text-foreground transition-colors py-2"
+            >
               Como funciona
             </a>
-            <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-muted-foreground hover:text-foreground transition-colors py-2">
+            <a
+              href="#pricing"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-sm text-muted-foreground hover:text-foreground transition-colors py-2"
+            >
               Planos
             </a>
-            <a href="#testimonials" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-muted-foreground hover:text-foreground transition-colors py-2">
+            <a
+              href="#testimonials"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-sm text-muted-foreground hover:text-foreground transition-colors py-2"
+            >
               Depoimentos
             </a>
             <Button
               variant="outline"
               size="sm"
-              onClick={() => { navigate("/login"); setMobileMenuOpen(false); }}
+              onClick={() => {
+                navigate("/login");
+                setMobileMenuOpen(false);
+              }}
               className="w-full mt-2"
             >
               Entrar

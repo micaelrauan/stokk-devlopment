@@ -56,12 +56,16 @@ export default function SalesPage() {
   const productSearchRef = useRef<HTMLInputElement>(null);
   const cashInputRef = useRef<HTMLInputElement>(null);
 
+  // Refs for stable keyboard handler — avoids stale closures
+  const startPaymentRef = useRef<(method: PaymentMethod) => void>(() => {});
+  const handleFinalizeSaleRef = useRef<(method: PaymentMethod) => void>(() => {});
+
   // Focus scanner on mount
   useEffect(() => {
     searchRef.current?.focus();
   }, []);
 
-  // Keyboard shortcuts
+  // Keyboard shortcuts — uses refs so dependencies don't change
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       // Don't capture when typing in inputs (except dedicated shortcuts)
@@ -89,17 +93,17 @@ export default function SalesPage() {
       if (cart.length > 0) {
         if (e.key === "F1") {
           e.preventDefault();
-          startPayment("cash");
+          startPaymentRef.current("cash");
           return;
         }
         if (e.key === "F2") {
           e.preventDefault();
-          handleFinalizeSale("card");
+          handleFinalizeSaleRef.current("card");
           return;
         }
         if (e.key === "F3") {
           e.preventDefault();
-          handleFinalizeSale("pix");
+          handleFinalizeSaleRef.current("pix");
           return;
         }
       }
@@ -247,6 +251,10 @@ export default function SalesPage() {
     },
     [cart, cashReceived, total, subtotal, discount, customerName, registerSale],
   );
+
+  // Keep refs in sync so keyboard shortcuts always use latest functions
+  startPaymentRef.current = startPayment;
+  handleFinalizeSaleRef.current = handleFinalizeSale;
 
   // Product browser
   const filteredProducts = useMemo(() => {
@@ -671,7 +679,9 @@ export default function SalesPage() {
               <Banknote className="w-4 h-4 sm:w-5 sm:h-5" />
               <span className="hidden sm:inline">Dinheiro</span>
               <span className="sm:hidden">Din.</span>
-              <span className="text-[10px] opacity-50 ml-0.5 hidden sm:inline">F1</span>
+              <span className="text-[10px] opacity-50 ml-0.5 hidden sm:inline">
+                F1
+              </span>
             </Button>
             <Button
               onClick={() => handleFinalizeSale("card")}
@@ -682,7 +692,9 @@ export default function SalesPage() {
               <CreditCard className="w-4 h-4 sm:w-5 sm:h-5" />
               <span className="hidden sm:inline">Cartão</span>
               <span className="sm:hidden">Cart.</span>
-              <span className="text-[10px] opacity-50 ml-0.5 hidden sm:inline">F2</span>
+              <span className="text-[10px] opacity-50 ml-0.5 hidden sm:inline">
+                F2
+              </span>
             </Button>
             <Button
               onClick={() => handleFinalizeSale("pix")}
@@ -692,7 +704,9 @@ export default function SalesPage() {
             >
               <Smartphone className="w-4 h-4 sm:w-5 sm:h-5" />
               PIX
-              <span className="text-[10px] opacity-50 ml-0.5 hidden sm:inline">F3</span>
+              <span className="text-[10px] opacity-50 ml-0.5 hidden sm:inline">
+                F3
+              </span>
             </Button>
           </div>
         ) : (

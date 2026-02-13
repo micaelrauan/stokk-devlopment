@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -59,6 +59,31 @@ export default function AddProductDialog({ open, onOpenChange }: Props) {
   const [newColorHex, setNewColorHex] = useState('#000000');
   const [showNewSize, setShowNewSize] = useState(false);
   const [newSizeName, setNewSizeName] = useState('');
+
+  // Reset form when dialog closes
+  useEffect(() => {
+    if (!open) {
+      setName('');
+      setDescription('');
+      setCategory('');
+      setBrand('');
+      setSalePrice('');
+      setCostPrice('');
+      setMinStock('3');
+      setSelectedSizes([]);
+      setSelectedColors([]);
+      setVariantDrafts([]);
+      setImageFile(null);
+      setImagePreview(null);
+      setShowNewCategory(false);
+      setNewCategoryName('');
+      setShowNewColor(false);
+      setNewColorName('');
+      setNewColorHex('#000000');
+      setShowNewSize(false);
+      setNewSizeName('');
+    }
+  }, [open]);
 
   const toggleSize = (size: string) => {
     const next = selectedSizes.includes(size) ? selectedSizes.filter(s => s !== size) : [...selectedSizes, size];
