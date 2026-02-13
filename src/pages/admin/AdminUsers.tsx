@@ -172,30 +172,56 @@ export default function AdminUsers() {
       toast.error("Preencha email, senha e nome da empresa");
       return;
     }
+    // Client-side password strength validation
+    if (newPassword.length < 8 || !/[A-Z]/.test(newPassword) || !/[a-z]/.test(newPassword) || !/[0-9]/.test(newPassword)) {
+      toast.error("Senha deve ter no mínimo 8 caracteres com maiúscula, minúscula e número");
+      return;
+    }
+    // Email validation
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
+      toast.error("Email inválido");
+      return;
+    }
     setCreating(true);
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email: newEmail,
-        password: newPassword,
-        options: { emailRedirectTo: window.location.origin },
-      });
-      if (error) {
-        toast.error(error.message);
+      // Use edge function to create user (avoids session hijack via client signUp)
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+      if (!token) {
+        toast.error("Sessão expirada. Faça login novamente.");
         setCreating(false);
         return;
       }
-      if (data.user) {
-        await from("profiles")
-          .update({
-            company_name: newCompany,
+
+      const createRes = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-update-user?action=create`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: newEmail,
+            password: newPassword,
+            companyName: newCompany,
             cnpj: newCnpj,
             address: newAddress,
             phone: newPhone,
             plan: newPlan,
             provider: newProvider,
-          })
-          .eq("id", data.user.id);
+          }),
+        }
+      );
+
+      const result = await createRes.json();
+      if (!createRes.ok) {
+        toast.error(result.error || "Erro ao criar empresa");
+        setCreating(false);
+        return;
       }
+
       toast.success(`Empresa "${newCompany}" criada com sucesso!`);
       setShowCreate(false);
       setNewEmail("");
@@ -287,6 +313,12 @@ export default function AdminUsers() {
     const emailChanged =
       originalUser && editUser.email && editUser.email !== originalUser.email;
     const passwordChanged = editPassword.length > 0;
+
+    // Client-side password strength check
+    if (passwordChanged && (editPassword.length < 8 || !/[A-Z]/.test(editPassword) || !/[a-z]/.test(editPassword) || !/[0-9]/.test(editPassword))) {
+      toast.error("Senha deve ter no mínimo 8 caracteres com maiúscula, minúscula e número");
+      return;
+    }
 
     if (emailChanged || passwordChanged) {
       try {

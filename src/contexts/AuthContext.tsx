@@ -7,6 +7,7 @@ import {
   useCallback,
   useMemo,
 } from "react";
+import { logger } from "@/lib/logger";
 import { supabase } from "@/integrations/supabase/client";
 import { Session, User } from "@supabase/supabase-js";
 
@@ -66,7 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const roles = (roleData ?? []).map((r: { role: string }) => r.role);
       setIsAdmin(roles.includes("admin"));
     } catch (e) {
-      console.error("Error fetching profile", e);
+      logger.error("Error fetching profile", e);
     }
   }, []);
 

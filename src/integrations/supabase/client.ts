@@ -5,10 +5,12 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "";
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error(
-    "[Stokk] Missing Supabase environment variables. " +
-      "Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY in .env.local or Vercel dashboard.",
-  );
+  if (import.meta.env.DEV) {
+    console.warn(
+      "[Stokk] Missing Supabase environment variables. " +
+        "Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY in .env.local.",
+    );
+  }
 }
 
 export const supabase: SupabaseClient<Database> = createClient<Database>(

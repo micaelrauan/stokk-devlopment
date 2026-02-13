@@ -5,6 +5,7 @@ import {
   DbProduct, DbProductVariant, DbSale, DbSaleItem, DbInventoryLog, DbAlert,
   Category, ColorItem, SizeItem,
 } from '@/types/inventory';
+import { logger } from '@/lib/logger';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const from = (table: string) => (supabase as any).from(table);
@@ -121,7 +122,7 @@ export function useInventory() {
       description: product.description ?? '', image_url: product.imageUrl ?? '',
       user_id: user.id,
     }).select().single();
-    if (error || !data) { console.error('addProduct error', error); return null; }
+    if (error || !data) { logger.error('addProduct error', error); return null; }
 
     if (product.variants.length > 0) {
       await from('product_variants').insert(
@@ -147,7 +148,7 @@ export function useInventory() {
     if (updates.minStockThreshold !== undefined) dbUpdates.min_stock_threshold = updates.minStockThreshold;
     dbUpdates.updated_at = new Date().toISOString();
     const { error } = await from('products').update(dbUpdates).eq('id', productId);
-    if (error) { console.error('updateProduct error', error); return null; }
+    if (error) { logger.error('updateProduct error', error); return null; }
     setProducts(prev => prev.map(p => p.id !== productId ? p : { ...p, ...updates, updatedAt: new Date() }));
     return true;
   }, []);
@@ -219,7 +220,7 @@ export function useInventory() {
       customer_name: sale.customerName ?? null,
       user_id: currentUserId,
     }).select().single();
-    if (error || !data) { console.error('registerSale error', error); return null; }
+    if (error || !data) { logger.error('registerSale error', error); return null; }
 
     await from('sale_items').insert(sale.items.map(i => ({
       sale_id: data.id, variant_id: i.variantId, product_id: i.productId,
@@ -245,7 +246,7 @@ export function useInventory() {
   const addCategory = useCallback(async (name: string) => {
     const currentUserId = (await supabase.auth.getUser()).data.user?.id;
     const { data, error } = await from('categories').insert({ name, user_id: currentUserId }).select().single();
-    if (error) { console.error('addCategory error', error); return null; }
+    if (error) { logger.error('addCategory error', error); return null; }
     setCategories(prev => [...prev, { id: data.id, name: data.name, createdAt: new Date(data.created_at) }].sort((a, b) => a.name.localeCompare(b.name)));
     return data;
   }, []);
@@ -258,7 +259,7 @@ export function useInventory() {
   const updateCategory = useCallback(async (categoryId: string, newName: string) => {
     const oldCat = categories.find(c => c.id === categoryId);
     const { error } = await from('categories').update({ name: newName }).eq('id', categoryId);
-    if (error) { console.error('updateCategory error', error); return null; }
+    if (error) { logger.error('updateCategory error', error); return null; }
     // Also update products that use the old category name
     if (oldCat) {
       await from('products').update({ category: newName }).eq('category', oldCat.name);
@@ -271,7 +272,7 @@ export function useInventory() {
   const addColor = useCallback(async (name: string, hex: string) => {
     const currentUserId = (await supabase.auth.getUser()).data.user?.id;
     const { data, error } = await from('colors').insert({ name, hex, user_id: currentUserId }).select().single();
-    if (error) { console.error('addColor error', error); return null; }
+    if (error) { logger.error('addColor error', error); return null; }
     setColors(prev => [...prev, { id: data.id, name: data.name, hex: data.hex, createdAt: new Date(data.created_at) }].sort((a, b) => a.name.localeCompare(b.name)));
     return data;
   }, []);
@@ -283,7 +284,7 @@ export function useInventory() {
 
   const updateColor = useCallback(async (colorId: string, name: string, hex: string) => {
     const { error } = await from('colors').update({ name, hex }).eq('id', colorId);
-    if (error) { console.error('updateColor error', error); return null; }
+    if (error) { logger.error('updateColor error', error); return null; }
     setColors(prev => prev.map(c => c.id === colorId ? { ...c, name, hex } : c).sort((a, b) => a.name.localeCompare(b.name)));
     return true;
   }, []);
@@ -292,7 +293,7 @@ export function useInventory() {
   const addSize = useCallback(async (name: string, displayOrder: number) => {
     const currentUserId = (await supabase.auth.getUser()).data.user?.id;
     const { data, error } = await from('sizes').insert({ name, display_order: displayOrder, user_id: currentUserId }).select().single();
-    if (error) { console.error('addSize error', error); return null; }
+    if (error) { logger.error('addSize error', error); return null; }
     setSizes(prev => [...prev, { id: data.id, name: data.name, displayOrder: data.display_order, createdAt: new Date(data.created_at) }].sort((a, b) => a.displayOrder - b.displayOrder));
     return data;
   }, []);
@@ -304,7 +305,7 @@ export function useInventory() {
 
   const updateSize = useCallback(async (sizeId: string, name: string, displayOrder: number) => {
     const { error } = await from('sizes').update({ name, display_order: displayOrder }).eq('id', sizeId);
-    if (error) { console.error('updateSize error', error); return null; }
+    if (error) { logger.error('updateSize error', error); return null; }
     setSizes(prev => prev.map(s => s.id === sizeId ? { ...s, name, displayOrder } : s).sort((a, b) => a.displayOrder - b.displayOrder));
     return true;
   }, []);

@@ -64,16 +64,43 @@ export default function EditProductDialog({ product, open, onOpenChange }: Props
 
   const uploadImage = async (): Promise<string> => {
     if (!imageFile) return imagePreview || '';
-    const ext = imageFile.name.split('.').pop();
-    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-    const { error } = await supabase.storage.from('product-images').upload(fileName, imageFile);
-    if (error) { console.error('Upload error', error); toast.error('Erro ao fazer upload da imagem'); return imagePreview || ''; }
+    const ext = imageFile.name.split('.').pop()?.toLowerCase();
+    const allowedExts = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'avif'];
+    if (!ext || !allowedExts.includes(ext)) {
+      toast.error('Formato de imagem não permitido. Use: jpg, png, webp, gif');
+      return imagePreview || '';
+    }
+    if (!imageFile.type.startsWith('image/')) {
+      toast.error('Arquivo não é uma imagem válida');
+      return imagePreview || '';
+    }
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { toast.error('Sessão expirada'); return imagePreview || ''; }
+    const fileName = `${user.id}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage.from('product-images').upload(fileName, imageFile, {
+      contentType: imageFile.type,
+      upsert: false,
+    });
+    if (error) { toast.error('Erro ao fazer upload da imagem'); return imagePreview || ''; }
     const { data: urlData } = supabase.storage.from('product-images').getPublicUrl(fileName);
     return urlData.publicUrl;
   };
 
   const handleSubmit = async () => {
     if (!product || !name || !category || !brand || !salePrice) return;
+
+    // Validate prices
+    const salePriceNum = parseFloat(salePrice);
+    const costPriceNum = parseFloat(costPrice) || 0;
+    if (isNaN(salePriceNum) || salePriceNum <= 0) {
+      toast.error('Preço de venda deve ser maior que zero');
+      return;
+    }
+    if (costPriceNum < 0) {
+      toast.error('Preço de custo não pode ser negativo');
+      return;
+    }
+
     setSaving(true);
 
     let imageUrl = imagePreview || '';

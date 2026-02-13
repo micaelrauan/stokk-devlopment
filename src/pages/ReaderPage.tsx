@@ -35,7 +35,7 @@ export default function ReaderPage() {
           margin: 8,
         });
       } catch (e) {
-        console.error("Barcode render error:", e);
+        if (import.meta.env.DEV) console.error("Barcode render error:", e);
       }
     }
   }, [result]);

@@ -22,11 +22,8 @@ export default function LoginPage() {
     const { error } = await signIn(email, password);
     setLoading(false);
     if (error) {
-      toast.error(
-        error === "Invalid login credentials"
-          ? "Email ou senha incorretos"
-          : error,
-      );
+      // Always show generic message to prevent user enumeration
+      toast.error("Email ou senha incorretos");
     } else {
       toast.success("Login realizado com sucesso!");
       navigate("/dashboard");

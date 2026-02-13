@@ -147,11 +147,27 @@ export default function AddProductDialog({ open, onOpenChange }: Props) {
 
   const uploadImage = async (): Promise<string> => {
     if (!imageFile) return '';
-    const ext = imageFile.name.split('.').pop();
-    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-    const { error } = await supabase.storage.from('product-images').upload(fileName, imageFile);
+    const ext = imageFile.name.split('.').pop()?.toLowerCase();
+    // Whitelist safe image extensions
+    const allowedExts = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'avif'];
+    if (!ext || !allowedExts.includes(ext)) {
+      toast.error('Formato de imagem não permitido. Use: jpg, png, webp, gif');
+      return '';
+    }
+    // Validate MIME type server-side compatible check
+    if (!imageFile.type.startsWith('image/')) {
+      toast.error('Arquivo não é uma imagem válida');
+      return '';
+    }
+    // Get current user for path scoping
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { toast.error('Sessão expirada'); return ''; }
+    const fileName = `${user.id}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage.from('product-images').upload(fileName, imageFile, {
+      contentType: imageFile.type,
+      upsert: false,
+    });
     if (error) {
-      console.error('Upload error', error);
       toast.error('Erro ao fazer upload da imagem');
       return '';
     }
@@ -188,6 +204,23 @@ export default function AddProductDialog({ open, onOpenChange }: Props) {
 
   const handleSubmit = async () => {
     if (!name || !category || !brand || !salePrice || variantDrafts.length === 0) return;
+
+    // Validate prices
+    const salePriceNum = parseFloat(salePrice);
+    const costPriceNum = parseFloat(costPrice) || 0;
+    if (isNaN(salePriceNum) || salePriceNum <= 0) {
+      toast.error('Preço de venda deve ser maior que zero');
+      return;
+    }
+    if (costPriceNum < 0) {
+      toast.error('Preço de custo não pode ser negativo');
+      return;
+    }
+    // Validate stock quantities are non-negative
+    if (variantDrafts.some(d => d.initialStock < 0)) {
+      toast.error('Estoque inicial não pode ser negativo');
+      return;
+    }
 
     setUploading(true);
     let imageUrl = '';

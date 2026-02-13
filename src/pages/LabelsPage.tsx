@@ -78,7 +78,7 @@ export default function LabelsPage() {
             background: "transparent",
           });
         } catch (e) {
-          console.error("Barcode error:", e);
+          if (import.meta.env.DEV) console.error("Barcode error:", e);
         }
       }
     });
