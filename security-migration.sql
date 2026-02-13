@@ -124,26 +124,31 @@ AS $$
 $$;
 
 -- Admin can view all products (read-only for dashboard)
+DROP POLICY IF EXISTS "Admins can view all products" ON products;
 CREATE POLICY "Admins can view all products" ON products FOR SELECT
   TO authenticated
   USING (is_admin());
 
 -- Admin can view all sales (read-only for dashboard)
+DROP POLICY IF EXISTS "Admins can view all sales" ON sales;
 CREATE POLICY "Admins can view all sales" ON sales FOR SELECT
   TO authenticated
   USING (is_admin());
 
 -- Admin can view all logs (read-only for dashboard)
+DROP POLICY IF EXISTS "Admins can view all logs" ON inventory_logs;
 CREATE POLICY "Admins can view all logs" ON inventory_logs FOR SELECT
   TO authenticated
   USING (is_admin());
 
 -- Admin can view all profiles
+DROP POLICY IF EXISTS "Admins can view all profiles" ON profiles;
 CREATE POLICY "Admins can view all profiles" ON profiles FOR SELECT
   TO authenticated
   USING (is_admin());
 
 -- Admin can update profiles (toggle active, change plan, etc.)
+DROP POLICY IF EXISTS "Admins can update profiles" ON profiles;
 CREATE POLICY "Admins can update profiles" ON profiles FOR UPDATE
   TO authenticated
   USING (is_admin())
