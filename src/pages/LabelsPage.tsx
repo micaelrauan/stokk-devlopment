@@ -95,8 +95,10 @@ export default function LabelsPage() {
     if (!w) return;
     w.document.write(`
       <html><head><title>Etiquetas - StockWear</title>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
       <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', Arial, sans-serif; padding: 10px; }
         .labels-grid { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -105,10 +107,26 @@ export default function LabelsPage() {
           padding: 8px 6px; text-align: center; page-break-inside: avoid;
           background: #fff;
         }
-        .label .brand { font-size: 7px; text-transform: uppercase; letter-spacing: 1.5px; color: #999; margin-bottom: 2px; }
-        .label .name { font-size: 10px; font-weight: 600; margin-bottom: 1px; }
-        .label .info { font-size: 8px; color: #777; }
-        .label .price { font-size: 16px; font-weight: 700; margin-top: 3px; }
+        /* Map Tailwind classes used in label HTML */
+        .text-\\[7px\\] { font-size: 7px; }
+        .text-\\[8px\\] { font-size: 8px; }
+        .text-\\[9px\\] { font-size: 9px; }
+        .text-\\[11px\\] { font-size: 11px; }
+        .text-base { font-size: 16px; }
+        .uppercase { text-transform: uppercase; }
+        .tracking-\\[1\\.5px\\] { letter-spacing: 1.5px; }
+        .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .font-semibold { font-weight: 600; }
+        .font-bold { font-weight: 700; }
+        .font-mono { font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace; }
+        .font-heading { font-family: 'Space Grotesk', sans-serif; }
+        .text-muted-foreground { color: #999; }
+        .mb-0\\.5 { margin-bottom: 2px; }
+        .my-1\\.5 { margin-top: 6px; margin-bottom: 6px; }
+        .flex { display: flex; }
+        .flex-wrap { flex-wrap: wrap; }
+        .gap-3 { gap: 12px; }
+        .justify-center { justify-content: center; }
         .label svg { display: block; margin: 4px auto; }
         @media print {
           body { padding: 0; }
@@ -119,7 +137,17 @@ export default function LabelsPage() {
       </body></html>
     `);
     w.document.close();
-    setTimeout(() => w.print(), 300);
+    // Wait for fonts to load before printing
+    const tryPrint = () => {
+      if (w.document.fonts && w.document.fonts.ready) {
+        w.document.fonts.ready.then(() => {
+          setTimeout(() => w.print(), 100);
+        });
+      } else {
+        setTimeout(() => w.print(), 800);
+      }
+    };
+    tryPrint();
   };
 
   // Build labels array with quantities
