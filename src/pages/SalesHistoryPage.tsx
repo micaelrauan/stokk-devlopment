@@ -36,7 +36,13 @@ const PAYMENT_LABELS: Record<string, { label: string; icon: React.ReactNode }> =
     pix: { label: "PIX", icon: <Smartphone className="w-4 h-4" /> },
   };
 
-function SaleRow({ sale, onViewProduct }: { sale: Sale; onViewProduct?: (productId: string) => void }) {
+function SaleRow({
+  sale,
+  onViewProduct,
+}: {
+  sale: Sale;
+  onViewProduct?: (productId: string) => void;
+}) {
   const [open, setOpen] = useState(false);
   const payment = PAYMENT_LABELS[sale.paymentMethod];
 
@@ -263,7 +269,13 @@ export default function SalesHistoryPage() {
             </p>
           </div>
         ) : (
-          filtered.map((sale) => <SaleRow key={sale.id} sale={sale} onViewProduct={handleViewProduct} />)
+          filtered.map((sale) => (
+            <SaleRow
+              key={sale.id}
+              sale={sale}
+              onViewProduct={handleViewProduct}
+            />
+          ))
         )}
       </div>
       <ProductDetailsDialog

@@ -61,14 +61,12 @@ export default function LabelsPage() {
   };
 
   useEffect(() => {
-    const canvases = containerRef.current?.querySelectorAll(
-      "canvas[data-barcode]",
-    );
-    canvases?.forEach((canvas) => {
-      const code = (canvas as HTMLCanvasElement).dataset.barcode;
+    const svgs = containerRef.current?.querySelectorAll("svg[data-barcode]");
+    svgs?.forEach((svg) => {
+      const code = (svg as SVGElement).dataset.barcode;
       if (code) {
         try {
-          JsBarcode(canvas, code, {
+          JsBarcode(svg, code, {
             format: "CODE128",
             width: 1.2,
             height: 36,
@@ -76,6 +74,7 @@ export default function LabelsPage() {
             fontSize: 9,
             margin: 2,
             background: "transparent",
+            xmlDocument: document,
           });
         } catch (e) {
           if (import.meta.env.DEV) console.error("Barcode error:", e);
@@ -110,7 +109,7 @@ export default function LabelsPage() {
         .label .name { font-size: 10px; font-weight: 600; margin-bottom: 1px; }
         .label .info { font-size: 8px; color: #777; }
         .label .price { font-size: 16px; font-weight: 700; margin-top: 3px; }
-        .label canvas { display: block; margin: 4px auto; }
+        .label svg { display: block; margin: 4px auto; }
         @media print {
           body { padding: 0; }
           .label { border: 1px solid #ccc; }
@@ -323,7 +322,7 @@ export default function LabelsPage() {
                           Ref: {selectedProduct.reference}
                         </p>
                         <div className="my-1.5 flex justify-center">
-                          <canvas data-barcode={variant.barcode} />
+                          <svg data-barcode={variant.barcode}></svg>
                         </div>
                         <p className="text-base font-heading font-bold">
                           R$ {selectedProduct.salePrice.toFixed(2)}
