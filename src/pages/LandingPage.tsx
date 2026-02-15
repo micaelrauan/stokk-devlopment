@@ -77,6 +77,29 @@ export default function LandingPage() {
   const stat2 = useCountUp(50000);
   const stat3 = useCountUp(99);
 
+  // Recursos incluídos em cada plano
+  const freeFeatures = [
+    { text: "Cadastro de produtos ilimitado", included: true },
+    { text: "Controle de estoque básico", included: true },
+    { text: "Gestão de grades (tamanhos/cores)", included: true },
+    { text: "Dashboard de vendas", included: false },
+    { text: "Alertas inteligentes de estoque", included: false },
+    { text: "Etiquetas e impressão", included: false },
+    { text: "Múltiplos usuários", included: false },
+    { text: "Suporte prioritário", included: false },
+  ];
+
+  const proFeatures = [
+    { text: "Tudo do plano grátis" },
+    { text: "Dashboard de vendas em tempo real" },
+    { text: "Alertas inteligentes de estoque" },
+    { text: "Etiquetas e impressão" },
+    { text: "Múltiplos usuários" },
+    { text: "Suporte prioritário" },
+    { text: "Relatórios avançados" },
+    { text: "Integrações futuras" },
+  ];
+
   const features = [
     {
       icon: Package,
@@ -134,31 +157,7 @@ export default function LandingPage() {
     },
   ];
 
-  const freeFeatures = [
-    { text: "Até 50 produtos", included: true },
-    { text: "Até 100 vendas por mês", included: true },
-    { text: "1 usuário", included: true },
-    { text: "Dashboard básico", included: true },
-    { text: "Alertas de estoque baixo", included: true },
-    { text: "Leitor de código de barras", included: false },
-    { text: "Impressão de etiquetas", included: false },
-    { text: "Relatórios avançados", included: false },
-    { text: "Vendas ilimitadas", included: false },
-    { text: "Suporte prioritário", included: false },
-  ];
 
-  const proFeatures = [
-    { text: "Produtos ilimitados", included: true },
-    { text: "Vendas ilimitadas", included: true },
-    { text: "Usuários ilimitados", included: true },
-    { text: "Dashboard completo com métricas", included: true },
-    { text: "Alertas inteligentes", included: true },
-    { text: "Leitor de código de barras", included: true },
-    { text: "Impressão de etiquetas em lote", included: true },
-    { text: "Relatórios avançados + exportação", included: true },
-    { text: "Gestão multi-loja", included: true },
-    { text: "Suporte VIP via WhatsApp", included: true },
-  ];
 
   const testimonials = [
     {
@@ -309,118 +308,14 @@ export default function LandingPage() {
         <div className="relative max-w-5xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/10 text-sm text-primary mb-8 animate-in fade-in slide-in-from-bottom-3 duration-700">
             <Sparkles className="w-4 h-4" />
-            Gestão de estoque inteligente para moda
           </div>
-
-          <h1 className="text-5xl md:text-7xl font-heading font-bold leading-[1.1] tracking-tight animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
-            O controle total
-            <span className="block mt-2">
-              do seu{" "}
-              <span className="relative inline-block">
-                <span className="relative z-10">estoque</span>
-                <span className="absolute bottom-2 left-0 right-0 h-3 bg-primary/15 -skew-x-3 rounded" />
-              </span>
-            </span>
-          </h1>
-
-          <p className="text-lg md:text-xl text-muted-foreground mt-8 max-w-2xl mx-auto leading-relaxed animate-in fade-in slide-in-from-bottom-5 duration-700 delay-200">
-            Plataforma completa para gerenciar grades, cores, SKUs e vendas do
-            seu negócio de moda. Do cadastro à venda, tudo em um só lugar.
+          <h2 className="text-3xl md:text-5xl font-heading font-bold">
+            Tudo que você precisa,
+            <br className="hidden md:block" /> nada que você não precisa
+          </h2>
+          <p className="text-muted-foreground mt-4 max-w-xl mx-auto text-lg">
+            Ferramentas profissionais pensadas para o dia a dia da gestão de moda.
           </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-300">
-            <Button
-              size="lg"
-              onClick={() => navigate("/login")}
-              className="gap-2 text-base px-8 rounded-full h-12 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all"
-            >
-              <MousePointerClick className="w-5 h-5" />
-              Acessar Sistema
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={() =>
-                document
-                  .getElementById("features")
-                  ?.scrollIntoView({ behavior: "smooth" })
-              }
-              className="text-base px-8 rounded-full h-12"
-            >
-              Explorar Recursos
-            </Button>
-          </div>
-
-          {/* Floating badges */}
-          <div className="hidden lg:block">
-            <div className="absolute top-44 left-8 xl:left-16 glass-card rounded-2xl p-4 animate-in fade-in slide-in-from-left-8 duration-1000 delay-500 shadow-lg">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                  <TrendingUp className="w-5 h-5 text-emerald-500" />
-                </div>
-                <div className="text-left">
-                  <p className="text-xs text-muted-foreground">Vendas hoje</p>
-                  <p className="font-heading font-bold text-lg">+R$ 2.450</p>
-                </div>
-              </div>
-            </div>
-            <div className="absolute top-64 right-8 xl:right-16 glass-card rounded-2xl p-4 animate-in fade-in slide-in-from-right-8 duration-1000 delay-700 shadow-lg">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                  <ShoppingBag className="w-5 h-5 text-blue-500" />
-                </div>
-                <div className="text-left">
-                  <p className="text-xs text-muted-foreground">Produtos</p>
-                  <p className="font-heading font-bold text-lg">1.247 SKUs</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Stats bar */}
-        <div className="relative max-w-4xl mx-auto mt-20">
-          <div className="glass-card rounded-2xl p-8 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-0 md:divide-x divide-border">
-            <div className="text-center" ref={stat1.ref}>
-              <p className="text-4xl font-heading font-bold">{stat1.count}+</p>
-              <p className="text-sm text-muted-foreground mt-1">
-                Empresas ativas
-              </p>
-            </div>
-            <div className="text-center" ref={stat2.ref}>
-              <p className="text-4xl font-heading font-bold">
-                {stat2.count.toLocaleString("pt-BR")}+
-              </p>
-              <p className="text-sm text-muted-foreground mt-1">
-                Produtos gerenciados
-              </p>
-            </div>
-            <div className="text-center" ref={stat3.ref}>
-              <p className="text-4xl font-heading font-bold">{stat3.count}%</p>
-              <p className="text-sm text-muted-foreground mt-1">
-                Satisfação dos clientes
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ FEATURES ═══ */}
-      <section id="features" className="py-24 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <span className="text-sm font-medium text-primary/80 tracking-wider uppercase">
-              Recursos
-            </span>
-            <h2 className="text-3xl md:text-5xl font-heading font-bold mt-3">
-              Tudo que você precisa,
-              <br className="hidden md:block" /> nada que você não precisa
-            </h2>
-            <p className="text-muted-foreground mt-4 max-w-xl mx-auto text-lg">
-              Ferramentas profissionais pensadas para o dia a dia da gestão de
-              moda.
-            </p>
-          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {features.map((f, i) => (
               <div
