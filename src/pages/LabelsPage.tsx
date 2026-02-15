@@ -121,6 +121,8 @@ export default function LabelsPage() {
         .font-mono { font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace; }
         .font-heading { font-family: 'Space Grotesk', sans-serif; }
         .text-muted-foreground { color: #999; }
+        .label-name { line-height: 1.2; word-break: break-word; overflow-wrap: break-word; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .label-size { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 14px; margin: 2px 0; }
         .mb-0\\.5 { margin-bottom: 2px; }
         .my-1\\.5 { margin-top: 6px; margin-bottom: 6px; }
         .flex { display: flex; }
@@ -337,14 +339,37 @@ export default function LabelsPage() {
                         className="label bg-card border border-border rounded-lg p-3 text-center shadow-sm"
                         style={{ width: 180 }}
                       >
-                        <p className="text-[7px] uppercase tracking-[1.5px] text-muted-foreground mb-0.5">
+                        <p className="label-brand text-[7px] uppercase tracking-[1.5px] text-muted-foreground mb-0.5">
                           {selectedProduct.brand}
                         </p>
-                        <h4 className="text-[11px] font-semibold truncate">
+                        <h4
+                          className="label-name font-semibold"
+                          style={{
+                            fontSize:
+                              selectedProduct.name.length > 20
+                                ? "9px"
+                                : selectedProduct.name.length > 14
+                                  ? "10px"
+                                  : "11px",
+                            lineHeight: 1.2,
+                            wordBreak: "break-word" as const,
+                            overflowWrap: "break-word" as const,
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical" as const,
+                            overflow: "hidden",
+                          }}
+                        >
                           {selectedProduct.name}
                         </h4>
                         <p className="text-[9px] text-muted-foreground">
-                          {variant.color} · Tam {variant.size}
+                          {variant.color}
+                        </p>
+                        <p
+                          className="label-size font-heading font-bold"
+                          style={{ fontSize: "14px", margin: "2px 0" }}
+                        >
+                          Tam {variant.size}
                         </p>
                         <p className="text-[8px] font-mono text-muted-foreground">
                           Ref: {selectedProduct.reference}
