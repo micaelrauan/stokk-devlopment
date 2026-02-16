@@ -3,13 +3,14 @@ import { useAuth } from '@/contexts/AuthContext';
 import { NavLink, useLocation, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard, Users, CreditCard, Activity, Shield,
-  LogOut, Sun, Moon, Menu, X
+  LogOut, Sun, Moon, Menu, X, Store
 } from 'lucide-react';
 import logo from '@/assets/logo.png';
 
 const adminNav = [
   { to: '/admin', icon: LayoutDashboard, label: 'Painel', end: true },
   { to: '/admin/usuarios', icon: Users, label: 'Empresas' },
+  { to: '/admin/lojas', icon: Store, label: 'Lojas Virtuais' },
   { to: '/admin/planos', icon: CreditCard, label: 'Planos' },
   { to: '/admin/atividade', icon: Activity, label: 'Atividade' },
 ];

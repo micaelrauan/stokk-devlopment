@@ -4,3 +4,4 @@ export { default as AdminDashboard } from './admin/AdminDashboard';
 export { default as AdminUsers } from './admin/AdminUsers';
 export { default as AdminPlans } from './admin/AdminPlans';
 export { default as AdminActivity } from './admin/AdminActivity';
+export { default as AdminEcommerce } from './admin/AdminEcommerce';
