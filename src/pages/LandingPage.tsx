@@ -41,26 +41,17 @@ export default function LandingPage() {
 
   // Recursos incluídos em cada plano
   // Recursos incluídos em cada plano
-  const freeFeatures = [
-    { text: "Até 50 produtos", included: true },
-    { text: "Controle de vendas básico", included: true },
-    { text: "Gestão simples de estoque", included: true },
-    { text: "Dashboard de vendas", included: false },
-    { text: "Grade de cores e tamanhos", included: false },
-    { text: "Etiquetas e impressão", included: false },
-    { text: "Suporte via WhatsApp", included: false },
-    { text: "Múltiplos usuários", included: false },
-  ];
-
   const proFeatures = [
-    { text: "Tudo do plano grátis" },
+    { text: "Produtos ilimitados" },
+    { text: "Controle de vendas avançado" },
+    { text: "Gestão completa de estoque" },
+    { text: "Grade de cores e tamanhos" },
     { text: "Dashboard de vendas em tempo real" },
     { text: "Alertas inteligentes de estoque" },
     { text: "Etiquetas e impressão" },
     { text: "Múltiplos usuários" },
     { text: "Suporte prioritário" },
     { text: "Relatórios avançados" },
-    { text: "Integrações futuras" },
   ];
 
   const features = [
@@ -196,20 +187,12 @@ export default function LandingPage() {
               )}
             </button>
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
               onClick={() => navigate("/login")}
-              className="hidden sm:inline-flex"
+              className="gap-2 rounded-full px-5 text-sm"
             >
               Entrar
-            </Button>
-            <Button
-              size="sm"
-              onClick={() => navigate("/login")}
-              className="gap-2 rounded-full px-3 sm:px-5 text-xs sm:text-sm"
-            >
-              <span className="hidden sm:inline">Começar grátis</span>
-              <span className="sm:hidden">Começar</span>
               <ArrowRight className="w-4 h-4" />
             </Button>
           </div>
@@ -295,7 +278,7 @@ export default function LandingPage() {
               className="rounded-full px-10 h-14 text-base font-semibold shadow-2xl shadow-primary/30 hover:shadow-2xl hover:shadow-primary/40 hover:-translate-y-1 hover:scale-105 transition-all duration-300 group bg-gradient-to-r from-primary to-primary/90" 
               onClick={() => navigate("/login")}
             >
-              Criar conta grátis
+              Acessar minha conta
               <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
             <Button 
@@ -373,62 +356,20 @@ export default function LandingPage() {
               Planos
             </span>
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold mt-4 bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
-              Simples assim: grátis ou completo
+              O plano completo para sua loja
             </h2>
             <p className="text-muted-foreground mt-6 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
-              Comece pequeno e cresça com a gente. Preço justo que cabe no bolso
-              da sua loja.
+              Tudo o que você precisa para organizar seu estoque e vender mais.
+              Sem letras miúdas.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto items-start">
-            {/* FREE */}
-            <div className="glass-card rounded-3xl p-10 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 hover:-translate-y-2 border-2 border-border/50 backdrop-blur-xl">
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h3 className="font-heading font-bold text-2xl">Grátis</h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Para conhecer o sistema
-                  </p>
-                </div>
-              </div>
-              <div className="mt-6">
-                <span className="text-6xl font-heading font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
-                  R$ 0
-                </span>
-                <span className="text-base text-muted-foreground ml-2">
-                  /para sempre
-                </span>
-              </div>
-              <ul className="mt-10 space-y-4">
-                {freeFeatures.map((f) => (
-                  <li
-                    key={f.text}
-                    className={`flex items-center gap-3 text-sm ${!f.included ? "line-through opacity-40" : ""}`}
-                  >
-                    {f.included ? (
-                      <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-500" />
-                    ) : (
-                      <X className="w-5 h-5 shrink-0 text-muted-foreground/50" />
-                    )}
-                    <span className={f.included ? "font-medium" : ""}>{f.text}</span>
-                  </li>
-                ))}
-              </ul>
-              <Button
-                className="w-full mt-10 rounded-full h-12 text-base font-semibold hover:scale-105 transition-transform duration-300 border-2"
-                variant="outline"
-                onClick={() => navigate("/login")}
-              >
-                Começar agora
-              </Button>
-            </div>
-
+          <div className="flex justify-center max-w-2xl mx-auto">
             {/* PRO */}
-            <div className="rounded-3xl p-10 relative bg-gradient-to-br from-foreground via-foreground to-foreground/90 text-background shadow-2xl shadow-foreground/20 transition-all duration-500 hover:-translate-y-2 hover:shadow-3xl hover:shadow-foreground/30 sm:scale-[1.05] border border-background/10">
+            <div className="rounded-3xl p-10 relative bg-gradient-to-br from-foreground via-foreground to-foreground/90 text-background shadow-2xl shadow-foreground/20 transition-all duration-500 hover:-translate-y-2 hover:shadow-3xl hover:shadow-foreground/30 border border-background/10 w-full">
               <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-400 to-amber-500 text-foreground text-xs font-bold px-5 py-2 rounded-full shadow-lg flex items-center gap-2 animate-pulse">
                 <Sparkles className="w-4 h-4" />
-                MAIS POPULAR
+                MELHOR CUSTO-BENEFÍCIO
               </div>
               <div className="flex items-start justify-between mb-4">
                 <div>
@@ -438,11 +379,16 @@ export default function LandingPage() {
                   </p>
                 </div>
               </div>
-              <div className="mt-6 flex items-baseline gap-2">
-                <span className="text-6xl font-heading font-bold tracking-tight">
-                  R$ 89
-                </span>
-                <span className="text-base text-background/70">,90 /mês</span>
+              <div className="mt-6">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-6xl font-heading font-bold tracking-tight">
+                    R$ 89
+                  </span>
+                  <span className="text-base text-background/70">,90 /mês</span>
+                </div>
+                <p className="text-sm text-background/80 mt-2 font-medium">
+                  Nos primeiros 3 meses, depois apenas R$ 120,00/mês
+                </p>
               </div>
               <ul className="mt-10 space-y-4">
                 {proFeatures.map((f) => (
@@ -460,7 +406,7 @@ export default function LandingPage() {
                 variant="secondary"
                 onClick={() => navigate("/login")}
               >
-                Começar agora
+                Assinar agora
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
               <p className="text-xs text-background/60 text-center mt-4">
@@ -548,7 +494,7 @@ export default function LandingPage() {
                 onClick={() => navigate("/login")}
                 className="mt-10 gap-2 text-base px-12 rounded-full h-16 bg-background text-foreground hover:bg-background/95 shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 font-bold"
               >
-                Começar Agora — É grátis
+                Acessar minha conta
                 <ArrowRight className="w-6 h-6" />
               </Button>
             </div>
@@ -608,19 +554,9 @@ export default function LandingPage() {
             {/* Developer */}
             <div>
               <h4 className="font-heading font-bold text-base mb-5">
-                Desenvolvido por
+                Contato
               </h4>
               <div className="space-y-3 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <Code2 className="w-5 h-5 shrink-0" />
-                  <span className="font-bold text-foreground">Kode</span>
-                  <span className="text-muted-foreground">
-                    | Desenvolvimento Web
-                  </span>
-                </div>
-                <p className="text-sm text-muted-foreground font-medium">
-                  Profissional: Micael Rauan
-                </p>
                 <div className="flex items-center gap-2">
                   <Instagram className="w-5 h-5 shrink-0" />
                   <a
@@ -651,15 +587,7 @@ export default function LandingPage() {
               © {new Date().getFullYear()} Stokk — Todos os direitos reservados.
             </p>
             <p className="text-sm text-muted-foreground flex items-center gap-2">
-              Feito com <span className="text-red-500 animate-pulse text-base">♥</span> por{" "}
-              <a
-                href="https://instagram.com/kode.devbr"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-bold text-foreground hover:underline"
-              >
-                Kode Desenvolvimento Web
-              </a>
+              Feito com <span className="text-red-500 animate-pulse text-base">♥</span> para sua loja
             </p>
           </div>
         </div>
