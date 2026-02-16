@@ -17,6 +17,7 @@ import {
   Shield,
   ChevronsLeft,
   ChevronsRight,
+  Store,
 } from "lucide-react";
 import { useInventoryContext } from "@/contexts/InventoryContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -54,6 +55,12 @@ const navSections = [
       { to: "/etiquetas", icon: Tags, label: "Etiquetas" },
       { to: "/leitor", icon: ScanBarcode, label: "Leitor" },
       { to: "/avisos", icon: Bell, label: "Avisos" },
+    ],
+  },
+  {
+    label: "Canais",
+    items: [
+      { to: "/ecommerce", icon: Store, label: "Loja Online" },
     ],
   },
 ];
