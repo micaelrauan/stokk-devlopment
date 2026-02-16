@@ -22,6 +22,8 @@ interface Profile {
   is_active: boolean;
   created_at: string;
   updated_at: string;
+  has_ecommerce: boolean;
+  slug: string | null;
 }
 
 interface AuthContextType {
