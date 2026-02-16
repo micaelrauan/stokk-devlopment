@@ -22,6 +22,8 @@ const AlertsPage = lazy(() => import("./pages/AlertsPage"));
 const SalesPage = lazy(() => import("./pages/SalesPage"));
 const SalesHistoryPage = lazy(() => import("./pages/SalesHistoryPage"));
 const StockPage = lazy(() => import("./pages/StockPage"));
+const EcommercePage = lazy(() => import("./pages/EcommercePage"));
+const StoreFront = lazy(() => import("./pages/StoreFront"));
 const AdminPage = lazy(() =>
   import("./pages/AdminPage").then((m) => ({ default: m.default })),
 );
@@ -36,6 +38,9 @@ const AdminPlans = lazy(() =>
 );
 const AdminActivity = lazy(() =>
   import("./pages/AdminPage").then((m) => ({ default: m.AdminActivity })),
+);
+const AdminEcommerce = lazy(() =>
+  import("./pages/AdminPage").then((m) => ({ default: m.AdminEcommerce })),
 );
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -73,6 +78,7 @@ const App = () => (
             <Routes>
               {/* Public routes */}
               <Route path="/" element={<LandingPage />} />
+              <Route path="/loja/:slug" element={<StoreFront />} />
               <Route path="/login" element={<LoginPage />} />
 
               {/* Admin routes */}
@@ -86,6 +92,7 @@ const App = () => (
               >
                 <Route index element={<AdminDashboard />} />
                 <Route path="usuarios" element={<AdminUsers />} />
+                <Route path="lojas" element={<AdminEcommerce />} />
                 <Route path="planos" element={<AdminPlans />} />
                 <Route path="atividade" element={<AdminActivity />} />
               </Route>
@@ -102,6 +109,7 @@ const App = () => (
                 <Route path="/etiquetas" element={<LabelsPage />} />
                 <Route path="/leitor" element={<ReaderPage />} />
                 <Route path="/avisos" element={<AlertsPage />} />
+                <Route path="/ecommerce" element={<EcommercePage />} />
               </Route>
 
               <Route path="*" element={<NotFound />} />
