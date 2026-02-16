@@ -14,6 +14,7 @@ const LandingPage = lazy(() => import("./pages/LandingPage"));
 const LoginPage = lazy(() => import("./pages/LoginPage"));
 const DashboardPage = lazy(() => import("./pages/DashboardPage"));
 const ProductsPage = lazy(() => import("./pages/ProductsPage"));
+const FinancePanel = lazy(() => import("./components/FinancePanel"));
 const LabelsPage = lazy(() => import("./pages/LabelsPage"));
 const ReaderPage = lazy(() => import("./pages/ReaderPage"));
 const OperationsPage = lazy(() => import("./pages/OperationsPage"));
@@ -92,6 +93,7 @@ const App = () => (
               {/* Protected app routes — single InventoryProvider for all */}
               <Route element={<AppRouteLayout />}>
                 <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/financeiro" element={<FinancePanel />} />
                 <Route path="/produtos" element={<ProductsPage />} />
                 <Route path="/vendas" element={<SalesPage />} />
                 <Route path="/historico" element={<SalesHistoryPage />} />

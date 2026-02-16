@@ -20,47 +20,11 @@ import {
   MousePointerClick,
   X,
 } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import logo from "@/assets/logo.png";
 import { Menu } from "lucide-react";
 
-/* ─── Animated counter hook ─── */
-function useCountUp(target: number, duration = 2000) {
-  const [count, setCount] = useState(0);
-  const ref = useRef<HTMLDivElement>(null);
-  const started = useRef(false);
 
-  useEffect(() => {
-    let timer: ReturnType<typeof setInterval> | null = null;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !started.current) {
-          started.current = true;
-          const step = target / (duration / 16);
-          let current = 0;
-          timer = setInterval(() => {
-            current += step;
-            if (current >= target) {
-              setCount(target);
-              if (timer) clearInterval(timer);
-              timer = null;
-            } else {
-              setCount(Math.floor(current));
-            }
-          }, 16);
-        }
-      },
-      { threshold: 0.3 },
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => {
-      observer.disconnect();
-      if (timer) clearInterval(timer);
-    };
-  }, [target, duration]);
-
-  return { count, ref };
-}
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -73,20 +37,19 @@ export default function LandingPage() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const stat1 = useCountUp(500);
-  const stat2 = useCountUp(50000);
-  const stat3 = useCountUp(99);
+
 
   // Recursos incluídos em cada plano
+  // Recursos incluídos em cada plano
   const freeFeatures = [
-    { text: "Cadastro de produtos ilimitado", included: true },
-    { text: "Controle de estoque básico", included: true },
-    { text: "Gestão de grades (tamanhos/cores)", included: true },
+    { text: "Até 50 produtos", included: true },
+    { text: "Controle de vendas básico", included: true },
+    { text: "Gestão simples de estoque", included: true },
     { text: "Dashboard de vendas", included: false },
-    { text: "Alertas inteligentes de estoque", included: false },
+    { text: "Grade de cores e tamanhos", included: false },
     { text: "Etiquetas e impressão", included: false },
+    { text: "Suporte via WhatsApp", included: false },
     { text: "Múltiplos usuários", included: false },
-    { text: "Suporte prioritário", included: false },
   ];
 
   const proFeatures = [
@@ -103,38 +66,38 @@ export default function LandingPage() {
   const features = [
     {
       icon: Package,
-      title: "Grade Inteligente",
-      desc: "Gerencie variantes por tamanho, cor e SKU com matriz de grade visual e intuitiva.",
+      title: "Grade de Verdade",
+      desc: "Chega de improviso. Controle P, M, G, Azul, Vermelho... tudo organizado.",
       color: "from-blue-500/20 to-blue-600/5",
     },
     {
       icon: BarChart3,
-      title: "Dashboard em Tempo Real",
-      desc: "Métricas de vendas, faturamento, estoque e alertas em painéis dinâmicos.",
+      title: "Vendas do Dia",
+      desc: "Saiba exatamente quanto você vendeu hoje, ontem e no mês em tempo real.",
       color: "from-emerald-500/20 to-emerald-600/5",
     },
     {
       icon: ShieldCheck,
-      title: "Segurança & Isolamento",
-      desc: "Dados isolados por empresa com autenticação robusta e criptografia.",
+      title: "Seus Dados Seguros",
+      desc: "Backup automático e proteção total. Sua loja não para se o computador quebrar.",
       color: "from-violet-500/20 to-violet-600/5",
     },
     {
       icon: ScanBarcode,
-      title: "Leitor de Código de Barras",
-      desc: "Escaneie produtos direto pelo celular ou desktop com PDV integrado.",
+      title: "Use o Celular",
+      desc: "Transforme a câmera do seu celular em um leitor de código de barras.",
       color: "from-amber-500/20 to-amber-600/5",
     },
     {
       icon: Users,
-      title: "Multi-Empresa",
-      desc: "Cada empresa tem seu sistema completo e independente de estoque.",
+      title: "Equipe Conectada",
+      desc: "Dê acesso aos vendedores com permissões limitadas. Você controla tudo.",
       color: "from-rose-500/20 to-rose-600/5",
     },
     {
       icon: Bell,
-      title: "Alertas Inteligentes",
-      desc: "Notificações automáticas de estoque baixo, esgotado e reposição.",
+      title: "Avisos de Reposição",
+      desc: "O Stokk te avisa quando uma peça está acabando antes de você perder a venda.",
       color: "from-cyan-500/20 to-cyan-600/5",
     },
   ];
@@ -157,26 +120,24 @@ export default function LandingPage() {
     },
   ];
 
-
-
   const testimonials = [
     {
-      name: "Maria Silva",
-      role: "Dona da Boutique Rosa",
-      text: "O Stokk transformou a gestão do meu estoque. Antes eu perdia vendas por não saber o que tinha disponível.",
-      avatar: "MS",
+      name: "Carla Mendes",
+      role: "Loja Flor de Lis",
+      text: "Eu anotava tudo no caderno e sempre perdia peças. O Stokk organizou minha vida, agora sei exato o que tenho.",
+      avatar: "CM",
     },
     {
-      name: "Carlos Santos",
-      role: "Gerente de Loja",
-      text: "A grade de tamanhos e cores é perfeita para vestuário. O controle por SKU facilitou muito nosso dia a dia.",
-      avatar: "CS",
+      name: "Ricardo Lima",
+      role: "Closet Masculino",
+      text: "A função de grade é essencial. Consigo ver rápido se tenho a Camisa Polo Azul no tamanho M. Recomendo!",
+      avatar: "RL",
     },
     {
-      name: "Ana Oliveira",
-      role: "Empreendedora",
-      text: "Sistema intuitivo e completo. Os alertas de estoque baixo me ajudam a não perder nenhuma venda.",
-      avatar: "AO",
+      name: "Ana Betina",
+      role: "Boutique Ana",
+      text: "Preço justo e sistema fácil. Minhas vendedoras aprenderam em 10 minutos. O suporte também é muito bom.",
+      avatar: "AB",
     },
   ];
 
@@ -184,12 +145,15 @@ export default function LandingPage() {
     <div className="min-h-screen bg-background overflow-x-hidden">
       {/* ═══ HEADER ═══ */}
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-background/80 backdrop-blur-xl border-b border-border shadow-sm" : "bg-transparent"}`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? "bg-background/95 backdrop-blur-2xl border-b border-border/50 shadow-lg shadow-black/5" : "bg-transparent"}`}
       >
-        <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-3">
-            <img src={logo} alt="Stokk" className="w-9 h-9 rounded-xl" />
-            <span className="font-heading font-bold text-xl tracking-tight">
+        <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-5">
+          <div className="flex items-center gap-3 group">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-purple-500/20 rounded-xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <img src={logo} alt="Stokk" className="w-10 h-10 rounded-xl relative z-10 shadow-sm" />
+            </div>
+            <span className="font-heading font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/80">
               Stokk
             </span>
           </div>
@@ -298,40 +262,67 @@ export default function LandingPage() {
       </header>
 
       {/* ═══ HERO ═══ */}
-      <section className="relative pt-32 pb-24 px-6 overflow-hidden">
+      <section className="relative pt-32 pb-32 px-6 overflow-hidden">
         {/* Background decoration */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-20 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-primary/3 rounded-full blur-3xl" />
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute top-20 left-1/4 w-[500px] h-[500px] bg-gradient-to-br from-primary/8 via-purple-500/5 to-transparent rounded-full blur-3xl animate-pulse-soft" />
+          <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-gradient-to-bl from-indigo-500/8 via-primary/5 to-transparent rounded-full blur-3xl animate-pulse-soft" style={{ animationDelay: '1s' }} />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-primary/3 to-purple-500/3 rounded-full blur-3xl" />
         </div>
 
-        <div className="relative max-w-5xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/10 text-sm text-primary mb-8 animate-in fade-in slide-in-from-bottom-3 duration-700">
-            <Sparkles className="w-4 h-4" />
+        <div className="relative max-w-6xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-primary/10 via-purple-500/10 to-primary/10 border border-primary/20 text-sm font-medium mb-8 animate-in fade-in slide-in-from-bottom-3 duration-700 hover:scale-105 transition-transform cursor-default shadow-lg shadow-primary/5">
+            <Sparkles className="w-4 h-4 text-amber-500 animate-pulse" />
+            <span className="text-foreground/90">
+              Mais de <span className="font-bold text-foreground">120 lojas</span> organizadas
+            </span>
           </div>
-          <h2 className="text-3xl md:text-5xl font-heading font-bold">
-            Tudo que você precisa,
-            <br className="hidden md:block" /> nada que você não precisa
+          <h2 className="text-4xl md:text-6xl lg:text-7xl font-heading font-bold leading-tight mb-6">
+            Controle sua loja de roupas
+            <br className="hidden md:block" />{" "}
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-purple-500 to-indigo-600 animate-gradient">
+              sem dor de cabeça
+            </span>
           </h2>
-          <p className="text-muted-foreground mt-4 max-w-xl mx-auto text-lg">
-            Ferramentas profissionais pensadas para o dia a dia da gestão de moda.
+          <p className="text-muted-foreground mt-6 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed">
+            Abandone o caderninho e as planilhas confusas. O sistema simples e
+            visual feito para quem vende moda.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10 mb-20 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-200">
+            <Button 
+              size="lg" 
+              className="rounded-full px-10 h-14 text-base font-semibold shadow-2xl shadow-primary/30 hover:shadow-2xl hover:shadow-primary/40 hover:-translate-y-1 hover:scale-105 transition-all duration-300 group bg-gradient-to-r from-primary to-primary/90" 
+              onClick={() => navigate("/login")}
+            >
+              Criar conta grátis
+              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+            </Button>
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="rounded-full px-10 h-14 text-base hover:bg-muted/80 hover:border-foreground/20 hover:-translate-y-0.5 transition-all duration-300 border-2" 
+              onClick={() => document.getElementById('how')?.scrollIntoView({ behavior: 'smooth' })}
+            >
+              Ver como funciona
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((f, i) => (
               <div
                 key={f.title}
-                className="group glass-card rounded-2xl p-7 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-default"
+                className="group glass-card rounded-3xl p-8 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-2 transition-all duration-500 cursor-default border-2 border-transparent hover:border-primary/10 backdrop-blur-xl"
                 style={{ animationDelay: `${i * 100}ms` }}
               >
                 <div
-                  className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${f.color} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300`}
+                  className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${f.color} flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg`}
                 >
-                  <f.icon className="w-7 h-7 text-foreground/80" />
+                  <f.icon className="w-8 h-8 text-foreground/90" />
                 </div>
-                <h3 className="font-heading font-semibold text-lg">
+                <h3 className="font-heading font-bold text-xl mb-3">
                   {f.title}
                 </h3>
-                <p className="text-muted-foreground text-sm mt-2 leading-relaxed">
+                <p className="text-muted-foreground text-sm leading-relaxed">
                   {f.desc}
                 </p>
               </div>
@@ -341,29 +332,30 @@ export default function LandingPage() {
       </section>
 
       {/* ═══ HOW IT WORKS ═══ */}
-      <section id="how" className="py-24 px-6 bg-muted/30">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
-            <span className="text-sm font-medium text-primary/80 tracking-wider uppercase">
+      <section id="how" className="py-28 px-6 bg-gradient-to-b from-muted/30 via-muted/50 to-muted/30 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.02)_1px,transparent_1px)] bg-[length:24px_24px] pointer-events-none opacity-50" />
+        <div className="max-w-6xl mx-auto relative">
+          <div className="text-center mb-20">
+            <span className="inline-block text-sm font-bold text-primary/90 tracking-wider uppercase px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4">
               Como funciona
             </span>
-            <h2 className="text-3xl md:text-5xl font-heading font-bold mt-3">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold mt-4 bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
               Comece em 3 passos simples
             </h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {steps.map((s, i) => (
-              <div key={s.num} className="relative text-center md:text-left">
+              <div key={s.num} className="relative text-center md:text-left group">
                 {i < steps.length - 1 && (
-                  <div className="hidden md:block absolute top-8 left-[60%] w-full h-px border-t-2 border-dashed border-border" />
+                  <div className="hidden md:block absolute top-10 left-[60%] w-full h-px border-t-2 border-dashed border-border/50" />
                 )}
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-foreground text-background font-heading font-bold text-xl mb-5 relative z-10">
+                <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-foreground to-foreground/80 text-background font-heading font-bold text-2xl mb-6 relative z-10 shadow-xl shadow-foreground/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
                   {s.num}
                 </div>
-                <h3 className="font-heading font-semibold text-lg">
+                <h3 className="font-heading font-bold text-xl mb-3">
                   {s.title}
                 </h3>
-                <p className="text-muted-foreground text-sm mt-2 leading-relaxed">
+                <p className="text-muted-foreground leading-relaxed">
                   {s.desc}
                 </p>
               </div>
@@ -373,112 +365,113 @@ export default function LandingPage() {
       </section>
 
       {/* ═══ PRICING ═══ */}
-      <section id="pricing" className="py-24 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <span className="text-sm font-medium text-primary/80 tracking-wider uppercase">
+      <section id="pricing" className="py-28 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent pointer-events-none" />
+        <div className="max-w-7xl mx-auto relative">
+          <div className="text-center mb-20">
+            <span className="inline-block text-sm font-bold text-primary/90 tracking-wider uppercase px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4">
               Planos
             </span>
-            <h2 className="text-3xl md:text-5xl font-heading font-bold mt-3">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold mt-4 bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
               Simples assim: grátis ou completo
             </h2>
-            <p className="text-muted-foreground mt-4 text-lg max-w-2xl mx-auto">
-              Comece sem pagar nada. Quando sua loja crescer, desbloqueie{" "}
-              <span className="font-semibold text-foreground">tudo</span> por
-              menos de R$ 3 por dia.
+            <p className="text-muted-foreground mt-6 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
+              Comece pequeno e cresça com a gente. Preço justo que cabe no bolso
+              da sua loja.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto items-start">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto items-start">
             {/* FREE */}
-            <div className="glass-card rounded-2xl p-8 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <h3 className="font-heading font-bold text-xl">Grátis</h3>
-              <p className="text-sm text-muted-foreground mt-1">
-                Para conhecer o sistema
-              </p>
-              <div className="mt-5">
-                <span className="text-5xl font-heading font-bold tracking-tight">
+            <div className="glass-card rounded-3xl p-10 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 hover:-translate-y-2 border-2 border-border/50 backdrop-blur-xl">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <h3 className="font-heading font-bold text-2xl">Grátis</h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Para conhecer o sistema
+                  </p>
+                </div>
+              </div>
+              <div className="mt-6">
+                <span className="text-6xl font-heading font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
                   R$ 0
                 </span>
-                <span className="text-sm text-muted-foreground ml-1">
+                <span className="text-base text-muted-foreground ml-2">
                   /para sempre
                 </span>
               </div>
-              <ul className="mt-8 space-y-3.5">
+              <ul className="mt-10 space-y-4">
                 {freeFeatures.map((f) => (
                   <li
                     key={f.text}
-                    className={`flex items-center gap-2.5 text-sm ${!f.included ? "line-through opacity-40" : ""}`}
+                    className={`flex items-center gap-3 text-sm ${!f.included ? "line-through opacity-40" : ""}`}
                   >
                     {f.included ? (
-                      <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-500" />
+                      <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-500" />
                     ) : (
-                      <X className="w-4 h-4 shrink-0 text-muted-foreground" />
+                      <X className="w-5 h-5 shrink-0 text-muted-foreground/50" />
                     )}
-                    {f.text}
+                    <span className={f.included ? "font-medium" : ""}>{f.text}</span>
                   </li>
                 ))}
               </ul>
               <Button
-                className="w-full mt-8 rounded-full h-11"
+                className="w-full mt-10 rounded-full h-12 text-base font-semibold hover:scale-105 transition-transform duration-300 border-2"
                 variant="outline"
                 onClick={() => navigate("/login")}
               >
-                Começar grátis
+                Começar agora
               </Button>
             </div>
 
             {/* PRO */}
-            <div className="rounded-2xl p-8 relative bg-gradient-to-br from-foreground to-foreground/80 text-background shadow-2xl shadow-foreground/10 transition-all duration-300 hover:-translate-y-1 sm:scale-[1.02]">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-background text-foreground text-xs font-bold px-4 py-1.5 rounded-full shadow-sm flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5" />
-                TUDO ILIMITADO
+            <div className="rounded-3xl p-10 relative bg-gradient-to-br from-foreground via-foreground to-foreground/90 text-background shadow-2xl shadow-foreground/20 transition-all duration-500 hover:-translate-y-2 hover:shadow-3xl hover:shadow-foreground/30 sm:scale-[1.05] border border-background/10">
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-400 to-amber-500 text-foreground text-xs font-bold px-5 py-2 rounded-full shadow-lg flex items-center gap-2 animate-pulse">
+                <Sparkles className="w-4 h-4" />
+                MAIS POPULAR
               </div>
-              <h3 className="font-heading font-bold text-xl">Stokk Pro</h3>
-              <p className="text-sm text-background/60 mt-1">
-                Para quem quer resultado de verdade
-              </p>
-              <div className="mt-5 flex items-baseline gap-2">
-                <span className="text-5xl font-heading font-bold tracking-tight">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <h3 className="font-heading font-bold text-2xl">Stokk Pro</h3>
+                  <p className="text-sm text-background/70 mt-1">
+                    Para quem quer crescer de verdade
+                  </p>
+                </div>
+              </div>
+              <div className="mt-6 flex items-baseline gap-2">
+                <span className="text-6xl font-heading font-bold tracking-tight">
                   R$ 89
                 </span>
-                <span className="text-sm text-background/60">/mês</span>
+                <span className="text-base text-background/70">,90 /mês</span>
               </div>
-              <p className="text-sm text-background/40 line-through mt-1">
-                R$ 149/mês
-              </p>
-              <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-background/10 text-xs font-medium text-background/80">
-                <Zap className="w-3.5 h-3.5" />
-                Economize R$ 720/ano
-              </div>
-              <ul className="mt-8 space-y-3.5">
+              <ul className="mt-10 space-y-4">
                 {proFeatures.map((f) => (
                   <li
                     key={f.text}
-                    className="flex items-center gap-2.5 text-sm"
+                    className="flex items-center gap-3 text-sm font-medium"
                   >
-                    <CheckCircle2 className="w-4 h-4 shrink-0 text-background/70" />
+                    <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-400" />
                     {f.text}
                   </li>
                 ))}
               </ul>
               <Button
-                className="w-full mt-8 rounded-full h-12 bg-background text-foreground hover:bg-background/90 text-base font-semibold"
+                className="w-full mt-10 rounded-full h-14 bg-background text-foreground hover:bg-background/95 text-base font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
                 variant="secondary"
                 onClick={() => navigate("/login")}
               >
-                Começar 7 dias grátis
-                <ArrowRight className="w-4 h-4 ml-1" />
+                Começar agora
+                <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
-              <p className="text-xs text-background/40 text-center mt-3">
-                Cancele quando quiser. Sem multa.
+              <p className="text-xs text-background/60 text-center mt-4">
+                Cancele quando quiser. Sem taxas ocultas.
               </p>
             </div>
           </div>
 
-          <p className="text-center text-sm text-muted-foreground mt-10">
+          <p className="text-center text-base text-muted-foreground mt-12">
             Sem fidelidade. Sem taxa de adesão. Sem surpresas.{" "}
-            <span className="font-medium text-foreground">
+            <span className="font-bold text-foreground">
               Sua loja merece mais.
             </span>
           </p>
@@ -486,40 +479,42 @@ export default function LandingPage() {
       </section>
 
       {/* ═══ TESTIMONIALS ═══ */}
-      <section id="testimonials" className="py-24 px-6 bg-muted/30">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <span className="text-sm font-medium text-primary/80 tracking-wider uppercase">
+      <section id="testimonials" className="py-28 px-6 bg-gradient-to-b from-muted/30 via-muted/50 to-muted/30 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.02)_1px,transparent_1px)] bg-[length:24px_24px] pointer-events-none opacity-50" />
+        <div className="max-w-7xl mx-auto relative">
+          <div className="text-center mb-20">
+            <span className="inline-block text-sm font-bold text-primary/90 tracking-wider uppercase px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4">
               Depoimentos
             </span>
-            <h2 className="text-3xl md:text-5xl font-heading font-bold mt-3">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold mt-4 bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
               Quem usa, recomenda
             </h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {testimonials.map((t) => (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {testimonials.map((t, i) => (
               <div
                 key={t.name}
-                className="glass-card rounded-2xl p-7 hover:shadow-lg transition-all duration-300"
+                className="glass-card rounded-3xl p-8 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 hover:-translate-y-2 border-2 border-transparent hover:border-primary/10 backdrop-blur-xl"
+                style={{ animationDelay: `${i * 100}ms` }}
               >
-                <div className="flex gap-1 mb-5">
+                <div className="flex gap-1 mb-6">
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className="w-4 h-4 fill-amber-400 text-amber-400"
+                      className="w-5 h-5 fill-amber-400 text-amber-400"
                     />
                   ))}
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed italic">
                   "{t.text}"
                 </p>
-                <div className="mt-6 pt-5 border-t border-border flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">
+                <div className="mt-8 pt-6 border-t border-border/50 flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-purple-500/20 flex items-center justify-center text-sm font-bold text-primary shadow-lg">
                     {t.avatar}
                   </div>
                   <div>
-                    <p className="font-medium text-sm">{t.name}</p>
-                    <p className="text-xs text-muted-foreground">{t.role}</p>
+                    <p className="font-bold text-base">{t.name}</p>
+                    <p className="text-sm text-muted-foreground">{t.role}</p>
                   </div>
                 </div>
               </div>
@@ -529,29 +524,32 @@ export default function LandingPage() {
       </section>
 
       {/* ═══ CTA ═══ */}
-      <section className="py-24 px-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="relative rounded-3xl bg-foreground text-background p-12 md:p-16 text-center overflow-hidden">
+      <section className="py-28 px-6">
+        <div className="max-w-5xl mx-auto">
+          <div className="relative rounded-[2rem] bg-gradient-to-br from-foreground via-foreground to-foreground/90 text-background p-16 md:p-20 text-center overflow-hidden border border-background/10 shadow-2xl">
             {/* CTA background decorations */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full blur-3xl" />
+            <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-white/3 rounded-full blur-3xl" />
 
             <div className="relative z-10">
-              <Zap className="w-12 h-12 mx-auto mb-6 text-background/30" />
-              <h2 className="text-3xl md:text-4xl font-heading font-bold">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-background/10 backdrop-blur-sm mb-8">
+                <Zap className="w-10 h-10 text-background animate-pulse" />
+              </div>
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold leading-tight">
                 Pronto para ter controle total?
               </h2>
-              <p className="text-background/60 mt-4 text-lg max-w-xl mx-auto">
+              <p className="text-background/80 mt-6 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
                 Comece a usar o Stokk agora e transforme a gestão do seu estoque
                 de moda.
               </p>
               <Button
                 size="lg"
                 onClick={() => navigate("/login")}
-                className="mt-8 gap-2 text-base px-10 rounded-full h-12 bg-background text-foreground hover:bg-background/90 shadow-lg"
+                className="mt-10 gap-2 text-base px-12 rounded-full h-16 bg-background text-foreground hover:bg-background/95 shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 font-bold"
               >
                 Começar Agora — É grátis
-                <ArrowRight className="w-5 h-5" />
+                <ArrowRight className="w-6 h-6" />
               </Button>
             </div>
           </div>
@@ -559,16 +557,16 @@ export default function LandingPage() {
       </section>
 
       {/* ═══ FOOTER ═══ */}
-      <footer className="border-t border-border py-12 px-6">
+      <footer className="border-t border-border/50 py-16 px-6 bg-muted/20">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
             {/* Brand */}
             <div className="md:col-span-2">
-              <div className="flex items-center gap-3 mb-4">
-                <img src={logo} alt="Stokk" className="w-9 h-9 rounded-xl" />
-                <span className="font-heading font-bold text-xl">Stokk</span>
+              <div className="flex items-center gap-3 mb-5">
+                <img src={logo} alt="Stokk" className="w-10 h-10 rounded-xl shadow-sm" />
+                <span className="font-heading font-bold text-2xl bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/80">Stokk</span>
               </div>
-              <p className="text-sm text-muted-foreground leading-relaxed max-w-sm">
+              <p className="text-base text-muted-foreground leading-relaxed max-w-md">
                 Plataforma completa de gestão de estoque para lojas de moda.
                 Controle grades, vendas e cresça com inteligência.
               </p>
@@ -576,14 +574,14 @@ export default function LandingPage() {
 
             {/* Links */}
             <div>
-              <h4 className="font-heading font-semibold text-sm mb-4">
+              <h4 className="font-heading font-bold text-base mb-5">
                 Produto
               </h4>
-              <ul className="space-y-2.5 text-sm text-muted-foreground">
+              <ul className="space-y-3 text-sm text-muted-foreground">
                 <li>
                   <a
                     href="#features"
-                    className="hover:text-foreground transition-colors"
+                    className="hover:text-foreground transition-colors hover:translate-x-1 inline-block"
                   >
                     Recursos
                   </a>
@@ -591,7 +589,7 @@ export default function LandingPage() {
                 <li>
                   <a
                     href="#pricing"
-                    className="hover:text-foreground transition-colors"
+                    className="hover:text-foreground transition-colors hover:translate-x-1 inline-block"
                   >
                     Planos
                   </a>
@@ -599,7 +597,7 @@ export default function LandingPage() {
                 <li>
                   <a
                     href="#testimonials"
-                    className="hover:text-foreground transition-colors"
+                    className="hover:text-foreground transition-colors hover:translate-x-1 inline-block"
                   >
                     Depoimentos
                   </a>
@@ -609,36 +607,36 @@ export default function LandingPage() {
 
             {/* Developer */}
             <div>
-              <h4 className="font-heading font-semibold text-sm mb-4">
+              <h4 className="font-heading font-bold text-base mb-5">
                 Desenvolvido por
               </h4>
-              <div className="space-y-2.5 text-sm text-muted-foreground">
+              <div className="space-y-3 text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
-                  <Code2 className="w-4 h-4 shrink-0" />
-                  <span className="font-medium text-foreground">Kode</span>
+                  <Code2 className="w-5 h-5 shrink-0" />
+                  <span className="font-bold text-foreground">Kode</span>
                   <span className="text-muted-foreground">
                     | Desenvolvimento Web
                   </span>
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-sm text-muted-foreground font-medium">
                   Profissional: Micael Rauan
                 </p>
                 <div className="flex items-center gap-2">
-                  <Instagram className="w-4 h-4 shrink-0" />
+                  <Instagram className="w-5 h-5 shrink-0" />
                   <a
                     href="https://instagram.com/kode.devbr"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hover:text-foreground transition-colors"
+                    className="hover:text-foreground transition-colors hover:underline"
                   >
                     @kode.devbr
                   </a>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Mail className="w-4 h-4 shrink-0" />
+                  <Mail className="w-5 h-5 shrink-0" />
                   <a
                     href="mailto:kode.dev.br@gmail.com"
-                    className="hover:text-foreground transition-colors"
+                    className="hover:text-foreground transition-colors hover:underline break-all"
                   >
                     kode.dev.br@gmail.com
                   </a>
@@ -648,17 +646,17 @@ export default function LandingPage() {
           </div>
 
           {/* Bottom bar */}
-          <div className="pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-xs text-muted-foreground">
+          <div className="pt-10 border-t border-border/50 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-sm text-muted-foreground">
               © {new Date().getFullYear()} Stokk — Todos os direitos reservados.
             </p>
-            <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-              Feito com <span className="text-red-400">♥</span> por{" "}
+            <p className="text-sm text-muted-foreground flex items-center gap-2">
+              Feito com <span className="text-red-500 animate-pulse text-base">♥</span> por{" "}
               <a
                 href="https://instagram.com/kode.devbr"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-medium text-foreground hover:underline"
+                className="font-bold text-foreground hover:underline"
               >
                 Kode Desenvolvimento Web
               </a>

@@ -293,6 +293,26 @@ export function useInventory() {
   );
 
   const deleteProduct = useCallback(async (productId: string) => {
+    // Remove logs de inventário relacionados
+    await from("inventory_logs").delete().eq("product_id", productId);
+    // Remove alertas relacionados
+    await from("alerts").delete().eq("product_id", productId);
+    // Busca vendas relacionadas
+    const saleItemsRes = await from("sale_items")
+      .select("sale_id")
+      .eq("product_id", productId);
+    const saleIds = Array.from(
+      new Set((saleItemsRes.data ?? []).map((si: any) => si.sale_id)),
+    );
+    if (saleIds.length > 0) {
+      // Remove sale_items
+      await from("sale_items").delete().in("sale_id", saleIds);
+      // Remove sales
+      await from("sales").delete().in("id", saleIds);
+    }
+    // Remove variações
+    await from("product_variants").delete().eq("product_id", productId);
+    // Remove o produto
     await from("products").delete().eq("id", productId);
     setProducts((prev) => prev.filter((p) => p.id !== productId));
   }, []);

@@ -35,6 +35,7 @@ const navSections = [
     label: "Principal",
     items: [
       { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+      { to: "/financeiro", icon: Tags, label: "Financeiro" },
       { to: "/produtos", icon: Package, label: "Produtos" },
       { to: "/estoque", icon: Warehouse, label: "Estoque" },
     ],
