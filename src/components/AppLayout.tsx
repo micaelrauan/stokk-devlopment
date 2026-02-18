@@ -1,3 +1,6 @@
+// Adicione um link para a nova página de admin se desejar acesso pelo menu ou footer
+// Exemplo:
+// <NavLink to="/admin" label="Admin" icon={Shield} />
 import { NavLink, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -70,7 +73,7 @@ function getInitials(name: string) {
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const { unreadAlerts } = useInventoryContext();
-  const { signOut, isAdmin, profile } = useAuth();
+  const { signOut, profile, isAdmin } = useAuth();
   const [dark, setDark] = useState(() => {
     if (typeof window !== "undefined") {
       return localStorage.getItem("theme") === "dark";
