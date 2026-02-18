@@ -22,21 +22,7 @@ const AlertsPage = lazy(() => import("./pages/AlertsPage"));
 const SalesPage = lazy(() => import("./pages/SalesPage"));
 const SalesHistoryPage = lazy(() => import("./pages/SalesHistoryPage"));
 const StockPage = lazy(() => import("./pages/StockPage"));
-const AdminPage = lazy(() =>
-  import("./pages/AdminPage").then((m) => ({ default: m.default })),
-);
-const AdminDashboard = lazy(() =>
-  import("./pages/AdminPage").then((m) => ({ default: m.AdminDashboard })),
-);
-const AdminUsers = lazy(() =>
-  import("./pages/AdminPage").then((m) => ({ default: m.AdminUsers })),
-);
-const AdminPlans = lazy(() =>
-  import("./pages/AdminPage").then((m) => ({ default: m.AdminPlans })),
-);
-const AdminActivity = lazy(() =>
-  import("./pages/AdminPage").then((m) => ({ default: m.AdminActivity })),
-);
+const AdminPage = lazy(() => import("./pages/admin/AdminPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -75,23 +61,9 @@ const App = () => (
               <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<LoginPage />} />
 
-              {/* Admin routes */}
-              <Route
-                path="/admin"
-                element={
-                  <ProtectedRoute requireAdmin>
-                    <AdminPage />
-                  </ProtectedRoute>
-                }
-              >
-                <Route index element={<AdminDashboard />} />
-                <Route path="usuarios" element={<AdminUsers />} />
-                <Route path="planos" element={<AdminPlans />} />
-                <Route path="atividade" element={<AdminActivity />} />
-              </Route>
-
               {/* Protected app routes — single InventoryProvider for all */}
               <Route element={<AppRouteLayout />}>
+                <Route path="/admin" element={<AdminPage />} />
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/financeiro" element={<FinancePanel />} />
                 <Route path="/produtos" element={<ProductsPage />} />

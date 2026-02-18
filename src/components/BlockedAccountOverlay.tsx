@@ -26,9 +26,8 @@ export default function BlockedAccountOverlay() {
               Conta Bloqueada
             </h2>
             <p className="text-muted-foreground leading-relaxed">
-              Sua conta foi desativada pelo administrador do sistema. Para
-              reativar o acesso, entre em contato com o suporte ou o
-              administrador.
+              Sua conta foi desativada. Para reativar o acesso, entre em contato
+              com o suporte ou o suporte.
             </p>
           </div>
 
@@ -36,9 +35,7 @@ export default function BlockedAccountOverlay() {
           <div className="rounded-lg bg-muted/50 border border-border px-4 py-3">
             <p className="text-sm text-muted-foreground">
               Entre em contato com o{" "}
-              <span className="font-semibold text-foreground">
-                administrador do sistema
-              </span>{" "}
+              <span className="font-semibold text-foreground">suporte</span>{" "}
               para mais informações sobre o bloqueio da sua conta.
             </p>
           </div>

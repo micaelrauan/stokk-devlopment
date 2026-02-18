@@ -28,8 +28,9 @@ interface AuthContextType {
   session: Session | null;
   user: User | null;
   profile: Profile | null;
-  isAdmin: boolean;
+  // ...existing code...
   loading: boolean;
+  isAdmin: boolean;
   signIn: (
     email: string,
     password: string,
@@ -48,6 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  // ...existing code...
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -134,8 +136,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       session,
       user,
       profile,
-      isAdmin,
+      // ...existing code...
       loading,
+      isAdmin,
       signIn,
       signUp,
       signOut,
@@ -145,8 +148,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       session,
       user,
       profile,
-      isAdmin,
+      // ...existing code...
       loading,
+      isAdmin,
       signIn,
       signUp,
       signOut,

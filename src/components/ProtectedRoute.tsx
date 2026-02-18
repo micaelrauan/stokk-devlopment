@@ -1,14 +1,17 @@
-import { useAuth } from '@/contexts/AuthContext';
-import { Navigate } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
+import { useAuth } from "@/contexts/AuthContext";
+import { Navigate } from "react-router-dom";
+import { Loader2 } from "lucide-react";
 
 interface Props {
   children: React.ReactNode;
-  requireAdmin?: boolean;
+  // Removed requireAdmin prop
 }
 
-export default function ProtectedRoute({ children, requireAdmin = false }: Props) {
-  const { user, isAdmin, loading } = useAuth();
+export default function ProtectedRoute({
+  children,
+  requireAdmin = false,
+}: Props) {
+  const { user, loading } = useAuth();
 
   if (loading) {
     return (
@@ -23,7 +26,7 @@ export default function ProtectedRoute({ children, requireAdmin = false }: Props
   }
 
   if (requireAdmin && !isAdmin) {
-    return <Navigate to="/dashboard" replace />;
+    // Removed admin check logic
   }
 
   return <>{children}</>;
