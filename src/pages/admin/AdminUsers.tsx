@@ -222,9 +222,19 @@ export default function AdminUsers() {
         },
       );
 
-      const result = await createRes.json();
+      let result = {};
+      try {
+        result = await createRes.json();
+      } catch (jsonErr) {
+        console.error("Erro ao parsear resposta da função edge:", jsonErr);
+      }
       if (!createRes.ok) {
-        toast.error(result.error || "Erro ao criar empresa");
+        console.error("Erro detalhado da função edge:", result);
+        toast.error(
+          result.error ||
+            result.message ||
+            "Erro ao criar empresa (401/403). Verifique permissões da função no Supabase e se o usuário está autenticado.",
+        );
         setCreating(false);
         return;
       }
@@ -240,8 +250,10 @@ export default function AdminUsers() {
       setNewPlan("free");
       setNewProvider("");
       fetchUsers();
-    } catch {
-      toast.error("Erro ao criar empresa");
+    } catch (err: any) {
+      const msg = err?.message || JSON.stringify(err);
+      toast.error("Erro ao criar empresa: " + msg);
+      console.error("Erro ao criar empresa:", err);
     }
     setCreating(false);
   };
@@ -728,7 +740,7 @@ export default function AdminUsers() {
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Mínimo 6 caracteres"
+                  placeholder="Mínimo 8 caracteres (A-z, 0-9)"
                 />
               </div>
               <div>

@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { Helmet } from "react-helmet";
 import { useInventoryContext } from "@/contexts/InventoryContext";
 import { Button } from "@/components/ui/button";
 import {
@@ -97,199 +98,217 @@ const AlertsPage = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-heading font-bold">
-            Avisos
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            {unreadAlerts > 0
-              ? `${unreadAlerts} não lido(s) · ${grouped.length} produto(s)`
-              : "Todos os avisos foram lidos"}
-          </p>
-        </div>
-        {unreadAlerts > 0 && (
-          <Button
-            variant="outline"
-            onClick={markAllAlertsRead}
-            size="sm"
-            className="gap-2"
-          >
-            <CheckCheck className="w-4 h-4" />
-            Marcar todos como lidos
-          </Button>
-        )}
-      </div>
-
-      {/* Filters */}
-      <div className="flex flex-wrap gap-2">
-        {filters.map((f) => (
-          <button
-            key={f.key}
-            onClick={() => setFilter(f.key)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
-              filter === f.key
-                ? "bg-primary text-primary-foreground border-primary"
-                : "bg-card border-border text-muted-foreground hover:border-primary/50"
-            }`}
-          >
-            {f.key === "out_of_stock" && "🔴 "}
-            {f.key === "low_stock" && "🟡 "}
-            {f.label}
-            {f.count > 0 && (
-              <span className="ml-1 opacity-70">({f.count})</span>
-            )}
-          </button>
-        ))}
-      </div>
-
-      {/* Grouped alerts */}
-      <div className="space-y-2">
-        {grouped.map((group) => {
-          const isExpanded = expandedProduct === group.productId;
-          const latestAlert = group.alerts.reduce((a, b) =>
-            a.createdAt > b.createdAt ? a : b,
-          );
-          const statusIcon = group.hasOutOfStock ? XCircle : AlertTriangle;
-          const StatusIcon = statusIcon;
-          const statusColor = group.hasOutOfStock
-            ? "text-destructive"
-            : "text-yellow-500";
-          const statusBg = group.hasOutOfStock
-            ? "bg-destructive/10"
-            : "bg-yellow-500/10";
-
-          return (
-            <div
-              key={group.productId}
-              className={`rounded-xl border transition-all ${group.unreadCount > 0 ? "border-border bg-card shadow-sm" : "border-border/50 bg-muted/20 opacity-75"}`}
-            >
-              {/* Product header */}
-              <button
-                onClick={() =>
-                  setExpandedProduct(isExpanded ? null : group.productId)
-                }
-                className="w-full p-4 flex items-center gap-3 text-left hover:opacity-80 transition-opacity"
-              >
-                <div className={`p-2 rounded-lg ${statusBg} shrink-0`}>
-                  <StatusIcon className={`w-4 h-4 ${statusColor}`} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-sm truncate">
-                      {group.productName}
-                    </h3>
-                    <span className="text-xs bg-muted px-1.5 py-0.5 rounded font-mono text-muted-foreground">
-                      {group.reference}
-                    </span>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {group.alerts.length} aviso(s) · último{" "}
-                    {format(latestAlert.createdAt, "dd MMM 'às' HH:mm", {
-                      locale: ptBR,
-                    })}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      const p = products.find((p) => p.id === group.productId);
-                      if (p) setDetailProduct(p);
-                    }}
-                    className="p-1 rounded-md hover:bg-muted transition-colors"
-                    title="Ver detalhes do produto"
-                  >
-                    <Eye className="w-4 h-4 text-muted-foreground" />
-                  </button>
-                  {group.unreadCount > 0 && (
-                    <span className="bg-destructive text-destructive-foreground text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
-                      {group.unreadCount}
-                    </span>
-                  )}
-                  {isExpanded ? (
-                    <ChevronUp className="w-4 h-4 text-muted-foreground" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                  )}
-                </div>
-              </button>
-
-              {/* Expanded: individual alerts */}
-              {isExpanded && (
-                <div className="border-t border-border">
-                  {group.unreadCount > 0 && (
-                    <div className="px-4 py-2 bg-muted/30 flex justify-end">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => markGroupRead(group)}
-                        className="text-xs gap-1 h-7"
-                      >
-                        <BellOff className="w-3 h-3" />
-                        Marcar grupo como lido
-                      </Button>
-                    </div>
-                  )}
-                  <div className="divide-y divide-border/50">
-                    {group.alerts
-                      .sort(
-                        (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
-                      )
-                      .map((alert) => (
-                        <div
-                          key={alert.id}
-                          className={`px-4 py-3 flex items-center gap-3 ${!alert.read ? "" : "opacity-50"}`}
-                        >
-                          <div
-                            className={`w-1.5 h-1.5 rounded-full shrink-0 ${!alert.read ? "bg-primary" : "bg-transparent"}`}
-                          />
-                          <p className="text-xs flex-1">{alert.message}</p>
-                          <span className="text-xs text-muted-foreground shrink-0">
-                            {format(alert.createdAt, "dd/MM HH:mm")}
-                          </span>
-                          {!alert.read && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="w-6 h-6 shrink-0"
-                              onClick={() => markAlertRead(alert.id)}
-                            >
-                              <BellOff className="w-3 h-3" />
-                            </Button>
-                          )}
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        })}
-
-        {grouped.length === 0 && (
-          <div className="text-center py-16 text-muted-foreground">
-            <Bell className="w-16 h-16 mx-auto mb-4 opacity-20" />
-            <p className="text-lg font-medium">
-              {filter === "all"
-                ? "Nenhum aviso registrado"
-                : "Nenhum aviso neste filtro"}
-            </p>
-            <p className="text-sm mt-1">
-              Avisos de estoque aparecerão aqui automaticamente.
+    <>
+      <Helmet>
+        <title>Avisos de Estoque | Stokk</title>
+        <meta
+          name="description"
+          content="Veja todos os avisos de estoque, produtos esgotados e alertas importantes do sistema Stokk."
+        />
+        <meta property="og:title" content="Avisos de Estoque | Stokk" />
+        <meta
+          property="og:description"
+          content="Veja todos os avisos de estoque, produtos esgotados e alertas importantes do sistema Stokk."
+        />
+        <meta property="og:type" content="website" />
+      </Helmet>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-heading font-bold">
+              Avisos
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              {unreadAlerts > 0
+                ? `${unreadAlerts} não lido(s) · ${grouped.length} produto(s)`
+                : "Todos os avisos foram lidos"}
             </p>
           </div>
-        )}
+          {unreadAlerts > 0 && (
+            <Button
+              variant="outline"
+              onClick={markAllAlertsRead}
+              size="sm"
+              className="gap-2"
+            >
+              <CheckCheck className="w-4 h-4" />
+              Marcar todos como lidos
+            </Button>
+          )}
+        </div>
+
+        {/* Filters */}
+        <div className="flex flex-wrap gap-2">
+          {filters.map((f) => (
+            <button
+              key={f.key}
+              onClick={() => setFilter(f.key)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+                filter === f.key
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-card border-border text-muted-foreground hover:border-primary/50"
+              }`}
+            >
+              {f.key === "out_of_stock" && "🔴 "}
+              {f.key === "low_stock" && "🟡 "}
+              {f.label}
+              {f.count > 0 && (
+                <span className="ml-1 opacity-70">({f.count})</span>
+              )}
+            </button>
+          ))}
+        </div>
+
+        {/* Grouped alerts */}
+        <div className="space-y-2">
+          {grouped.map((group) => {
+            const isExpanded = expandedProduct === group.productId;
+            const latestAlert = group.alerts.reduce((a, b) =>
+              a.createdAt > b.createdAt ? a : b,
+            );
+            const statusIcon = group.hasOutOfStock ? XCircle : AlertTriangle;
+            const StatusIcon = statusIcon;
+            const statusColor = group.hasOutOfStock
+              ? "text-destructive"
+              : "text-yellow-500";
+            const statusBg = group.hasOutOfStock
+              ? "bg-destructive/10"
+              : "bg-yellow-500/10";
+
+            return (
+              <div
+                key={group.productId}
+                className={`rounded-xl border transition-all ${group.unreadCount > 0 ? "border-border bg-card shadow-sm" : "border-border/50 bg-muted/20 opacity-75"}`}
+              >
+                {/* Product header */}
+                <button
+                  onClick={() =>
+                    setExpandedProduct(isExpanded ? null : group.productId)
+                  }
+                  className="w-full p-4 flex items-center gap-3 text-left hover:opacity-80 transition-opacity"
+                >
+                  <div className={`p-2 rounded-lg ${statusBg} shrink-0`}>
+                    <StatusIcon className={`w-4 h-4 ${statusColor}`} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-semibold text-sm truncate">
+                        {group.productName}
+                      </h3>
+                      <span className="text-xs bg-muted px-1.5 py-0.5 rounded font-mono text-muted-foreground">
+                        {group.reference}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {group.alerts.length} aviso(s) · último{" "}
+                      {format(latestAlert.createdAt, "dd MMM 'às' HH:mm", {
+                        locale: ptBR,
+                      })}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const p = products.find(
+                          (p) => p.id === group.productId,
+                        );
+                        if (p) setDetailProduct(p);
+                      }}
+                      className="p-1 rounded-md hover:bg-muted transition-colors"
+                      title="Ver detalhes do produto"
+                    >
+                      <Eye className="w-4 h-4 text-muted-foreground" />
+                    </button>
+                    {group.unreadCount > 0 && (
+                      <span className="bg-destructive text-destructive-foreground text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                        {group.unreadCount}
+                      </span>
+                    )}
+                    {isExpanded ? (
+                      <ChevronUp className="w-4 h-4 text-muted-foreground" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                    )}
+                  </div>
+                </button>
+
+                {/* Expanded: individual alerts */}
+                {isExpanded && (
+                  <div className="border-t border-border">
+                    {group.unreadCount > 0 && (
+                      <div className="px-4 py-2 bg-muted/30 flex justify-end">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => markGroupRead(group)}
+                          className="text-xs gap-1 h-7"
+                        >
+                          <BellOff className="w-3 h-3" />
+                          Marcar grupo como lido
+                        </Button>
+                      </div>
+                    )}
+                    <div className="divide-y divide-border/50">
+                      {group.alerts
+                        .sort(
+                          (a, b) =>
+                            b.createdAt.getTime() - a.createdAt.getTime(),
+                        )
+                        .map((alert) => (
+                          <div
+                            key={alert.id}
+                            className={`px-4 py-3 flex items-center gap-3 ${!alert.read ? "" : "opacity-50"}`}
+                          >
+                            <div
+                              className={`w-1.5 h-1.5 rounded-full shrink-0 ${!alert.read ? "bg-primary" : "bg-transparent"}`}
+                            />
+                            <p className="text-xs flex-1">{alert.message}</p>
+                            <span className="text-xs text-muted-foreground shrink-0">
+                              {format(alert.createdAt, "dd/MM HH:mm")}
+                            </span>
+                            {!alert.read && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="w-6 h-6 shrink-0"
+                                onClick={() => markAlertRead(alert.id)}
+                              >
+                                <BellOff className="w-3 h-3" />
+                              </Button>
+                            )}
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {grouped.length === 0 && (
+            <div className="text-center py-16 text-muted-foreground">
+              <Bell className="w-16 h-16 mx-auto mb-4 opacity-20" />
+              <p className="text-lg font-medium">
+                {filter === "all"
+                  ? "Nenhum aviso registrado"
+                  : "Nenhum aviso neste filtro"}
+              </p>
+              <p className="text-sm mt-1">
+                Avisos de estoque aparecerão aqui automaticamente.
+              </p>
+            </div>
+          )}
+        </div>
+        <ProductDetailsDialog
+          product={detailProduct}
+          open={!!detailProduct}
+          onOpenChange={(open) => {
+            if (!open) setDetailProduct(null);
+          }}
+        />
       </div>
-      <ProductDetailsDialog
-        product={detailProduct}
-        open={!!detailProduct}
-        onOpenChange={(open) => {
-          if (!open) setDetailProduct(null);
-        }}
-      />
-    </div>
+    </>
   );
 };
 

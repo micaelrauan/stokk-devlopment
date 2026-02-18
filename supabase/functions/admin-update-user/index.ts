@@ -9,15 +9,15 @@ const ALLOWED_ORIGINS = [
 ];
 
 function getCorsHeaders(req: Request) {
-  const origin = req.headers.get("Origin") || "";
-  const allowedOrigin = ALLOWED_ORIGINS.includes(origin)
-    ? origin
-    : ALLOWED_ORIGINS[0];
+  const origin = req.headers.get("Origin");
+  console.log(`Request from origin: ${origin}`);
+  const allowedOrigin = origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  
   return {
     "Access-Control-Allow-Origin": allowedOrigin,
-    "Access-Control-Allow-Headers":
-      "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Max-Age": "86400",
   };
 }
 
@@ -36,7 +36,10 @@ serve(async (req) => {
   const corsHeaders = getCorsHeaders(req);
 
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response("ok", {
+      status: 200,
+      headers: corsHeaders,
+    });
   }
 
   try {
@@ -141,22 +144,33 @@ serve(async (req) => {
           email,
           password,
           email_confirm: true,
+          user_metadata: {
+            company_name: companyName,
+          },
         });
       if (createError) throw createError;
 
-      // Update profile with company data
+      // Ensure profile exists and has company data
       if (newUser.user) {
-        await supabaseAdmin
+        const { error: profileError } = await supabaseAdmin
           .from("profiles")
-          .update({
+          .upsert({
+            id: newUser.user.id,
             company_name: companyName,
             cnpj: cnpj || null,
             address: address || null,
             phone: phone || null,
             plan: plan || "free",
             provider: provider || null,
-          })
-          .eq("id", newUser.user.id);
+            is_active: true,
+          });
+        if (profileError) throw profileError;
+
+        // Also assign a default 'user' role
+        await supabaseAdmin.from("user_roles").upsert({
+          user_id: newUser.user.id,
+          role: "user",
+        });
       }
 
       return new Response(
@@ -250,11 +264,12 @@ serve(async (req) => {
       status: 400,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-  } catch (_error) {
-    // Never leak internal error details to the client
-    return new Response(JSON.stringify({ error: "Erro interno do servidor" }), {
+  } catch (error) {
+    console.error("Error in admin-update-user function:", error);
+    const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
+    return new Response(JSON.stringify({ error: errorMessage }), {
       status: 500,
-      headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });
