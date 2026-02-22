@@ -9,7 +9,6 @@ import {
 } from "lucide-react";
 import { useInventoryContext } from "@/contexts/InventoryContext";
 import ProductDetailsDialog from "@/components/ProductDetailsDialog";
-import FinancePanel from "@/components/FinancePanel";
 import { Product } from "@/types/inventory";
 import {
   PieChart,
@@ -159,10 +158,6 @@ export default function DashboardPage() {
         <p className="text-muted-foreground mt-1">Visão geral do seu estoque</p>
       </div>
 
-      {/* Painel Financeiro */}
-      <div className="glass-card rounded-xl p-6">
-        <FinancePanel />
-      </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

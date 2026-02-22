@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useInventoryContext } from "@/contexts/InventoryContext";
+import { toast } from "sonner";
 import {
   Search,
   Plus,
@@ -312,7 +313,14 @@ export default function ProductsPage() {
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancelar</AlertDialogCancel>
                           <AlertDialogAction
-                            onClick={() => deleteProduct(product.id)}
+                            onClick={async () => {
+                              const result = await deleteProduct(product.id);
+                              if (result?.success) {
+                                toast.success("Produto excluído com sucesso");
+                              } else {
+                                toast.error("Erro ao excluir produto: " + (result?.error || "Erro desconhecido"));
+                              }
+                            }}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                           >
                             Excluir

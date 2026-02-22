@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const ALLOWED_ORIGINS = [
-  "https://stokk-devlopment.vercel.app",
+  "https://stokk-development.vercel.app",
   "http://127.0.0.1:5173",
   "http://localhost:5173",
 ];

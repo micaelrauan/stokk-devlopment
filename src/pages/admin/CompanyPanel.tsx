@@ -81,6 +81,46 @@ export default function CompanyPanel() {
   const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const callAdminUpdateUser = useCallback(
+    async (action: "list" | "create" | "update", method: "GET" | "POST", body?: unknown) => {
+      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-update-user?action=${action}`;
+      const apikey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+      const doRequest = async (accessToken: string) =>
+        fetch(url, {
+          method,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            apikey,
+            "Content-Type": "application/json",
+          },
+          body: body ? JSON.stringify(body) : undefined,
+        });
+
+      const { data: sessionData } = await supabase.auth.getSession();
+      let accessToken = sessionData.session?.access_token;
+
+      if (!accessToken) {
+        const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
+        if (refreshError || !refreshed.session?.access_token) {
+          throw new Error("Sessão expirada. Faça login novamente.");
+        }
+        accessToken = refreshed.session.access_token;
+      }
+
+      let res = await doRequest(accessToken);
+      if (res.status === 401) {
+        const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
+        if (!refreshError && refreshed.session?.access_token) {
+          res = await doRequest(refreshed.session.access_token);
+        }
+      }
+
+      return res;
+    },
+    [],
+  );
+
   const fetchUsers = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -98,22 +138,12 @@ export default function CompanyPanel() {
       // Fetch emails from admin edge function
       let emailMap: Record<string, string> = {};
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        const token = session?.access_token;
-        if (token) {
-          const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-update-user?action=list`;
-          const listRes = await fetch(url, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-            },
+        const listRes = await callAdminUpdateUser("list", "GET");
+        if (listRes.ok) {
+          const users = await listRes.json();
+          users.forEach((u: any) => {
+            emailMap[u.id] = u.email;
           });
-          if (listRes.ok) {
-            const users = await listRes.json();
-            users.forEach((u: any) => {
-              emailMap[u.id] = u.email;
-            });
-          }
         }
       } catch (err) {
         console.error("Erro ao buscar emails via edge function:", err);
@@ -158,7 +188,7 @@ export default function CompanyPanel() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [callAdminUpdateUser]);
 
   useEffect(() => {
     fetchUsers();
@@ -202,35 +232,16 @@ export default function CompanyPanel() {
     }
     setCreating(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const token = session?.access_token;
-      if (!token) {
-        toast.error("Sessão expirada. Faça login novamente.");
-        setCreating(false);
-        return;
-      }
-
-      const createRes = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-update-user?action=create`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: newEmail,
-            password: newPassword,
-            companyName: newCompany,
-            cnpj: newCnpj,
-            address: newAddress,
-            phone: newPhone,
-            plan: newPlan,
-            provider: newProvider,
-          }),
-        },
-      );
+      const createRes = await callAdminUpdateUser("create", "POST", {
+        email: newEmail,
+        password: newPassword,
+        companyName: newCompany,
+        cnpj: newCnpj,
+        address: newAddress,
+        phone: newPhone,
+        plan: newPlan,
+        provider: newProvider,
+      });
 
       let result: any = {};
       try {
@@ -357,26 +368,13 @@ export default function CompanyPanel() {
 
     if (emailChanged || passwordChanged) {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        const token = session?.access_token;
-        if (token) {
-          const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-update-user?action=update`;
-          const body: any = { userId: editUser.id };
-          if (emailChanged) body.email = editUser.email;
-          if (passwordChanged) body.password = editPassword;
-          const res = await fetch(url, {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(body),
-          });
-          if (!res.ok) {
-            const err = await res.json();
-            toast.error(err.error || "Erro ao atualizar credenciais");
-          }
+        const body: any = { userId: editUser.id };
+        if (emailChanged) body.email = editUser.email;
+        if (passwordChanged) body.password = editPassword;
+        const res = await callAdminUpdateUser("update", "POST", body);
+        if (!res.ok) {
+          const err = await res.json();
+          toast.error(err.error || "Erro ao atualizar credenciais");
         }
       } catch {
         toast.error("Erro ao atualizar credenciais");

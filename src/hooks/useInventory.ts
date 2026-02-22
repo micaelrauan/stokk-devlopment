@@ -293,29 +293,52 @@ export function useInventory() {
   );
 
   const deleteProduct = useCallback(async (productId: string) => {
-    // Remove logs de inventário relacionados
-    await from("inventory_logs").delete().eq("product_id", productId);
-    // Remove alertas relacionados
-    await from("alerts").delete().eq("product_id", productId);
-    // Busca vendas relacionadas
-    const saleItemsRes = await from("sale_items")
-      .select("sale_id")
-      .eq("product_id", productId);
-    const saleIds = Array.from(
-      new Set((saleItemsRes.data ?? []).map((si: any) => si.sale_id)),
-    );
-    if (saleIds.length > 0) {
-      // Remove sale_items
-      await from("sale_items").delete().in("sale_id", saleIds);
-      // Remove sales
-      await from("sales").delete().in("id", saleIds);
+    console.log("--- INICIANDO EXCLUSÃO ---", productId);
+    try {
+      // 1. Logs
+      const { data: d1, error: e1 } = await supabase.from("inventory_logs").delete().eq("product_id", productId).select();
+      console.log("Logs deletados:", d1?.length || 0);
+      if (e1) throw e1;
+
+      // 2. Alertas
+      const { data: d2, error: e2 } = await supabase.from("alerts").delete().eq("product_id", productId).select();
+      console.log("Alertas deletados:", d2?.length || 0);
+      if (e2) throw e2;
+
+      // 3. Itens de Venda
+      const { data: d3, error: e3 } = await supabase.from("sale_items").delete().eq("product_id", productId).select();
+      console.log("Itens de venda deletados:", d3?.length || 0);
+      if (e3) throw e3;
+
+      // 4. Variações
+      const { data: d4, error: e4 } = await supabase.from("product_variants").delete().eq("product_id", productId).select();
+      console.log("Variações deletadas:", d4?.length || 0);
+      if (e4) throw e4;
+
+      // 5. Produto
+      const { data: d5, error: e5 } = await supabase.from("products").delete().eq("id", productId).select();
+      console.log("Produto deletado:", d5);
+      if (e5) throw e5;
+
+      if (!d5 || d5.length === 0) {
+        console.warn("Nenhum produto foi removido do banco. Verifique permissões (RLS).");
+        return { 
+          success: false, 
+          error: "O banco de dados não permitiu a exclusão deste produto. Verifique se você tem permissão ou se o produto ainda existe." 
+        };
+      }
+
+      console.log("Exclusão confirmada no Supabase.");
+      await fetchAll();
+      return { success: true };
+    } catch (error: any) {
+      console.error("ERRO CRÍTICO:", error);
+      return { 
+        success: false, 
+        error: error.message || "Erro inesperado ao excluir o produto." 
+      };
     }
-    // Remove variações
-    await from("product_variants").delete().eq("product_id", productId);
-    // Remove o produto
-    await from("products").delete().eq("id", productId);
-    setProducts((prev) => prev.filter((p) => p.id !== productId));
-  }, []);
+  }, [fetchAll]);
 
   const updateVariantStock = useCallback(
     async (productId: string, variantId: string, quantity: number) => {

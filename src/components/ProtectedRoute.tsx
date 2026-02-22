@@ -4,14 +4,14 @@ import { Loader2 } from "lucide-react";
 
 interface Props {
   children: React.ReactNode;
-  // Removed requireAdmin prop
+  requireAdmin?: boolean;
 }
 
 export default function ProtectedRoute({
   children,
   requireAdmin = false,
 }: Props) {
-  const { user, loading } = useAuth();
+  const { user, loading, isAdmin } = useAuth();
 
   if (loading) {
     return (
@@ -26,7 +26,7 @@ export default function ProtectedRoute({
   }
 
   if (requireAdmin && !isAdmin) {
-    // Removed admin check logic
+    return <Navigate to="/dashboard" replace />;
   }
 
   return <>{children}</>;

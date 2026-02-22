@@ -23,6 +23,7 @@ import {
 import { useState, useEffect } from "react";
 import logo from "@/assets/logo.png";
 import { Menu } from "lucide-react";
+import { ModernHero } from "@/components/ModernHero";
 
 
 
@@ -59,13 +60,13 @@ export default function LandingPage() {
       icon: Package,
       title: "Grade de Verdade",
       desc: "Chega de improviso. Controle P, M, G, Azul, Vermelho... tudo organizado.",
-      color: "from-blue-500/20 to-blue-600/5",
+      color: "from-purple-500/20 to-purple-600/5",
     },
     {
       icon: BarChart3,
       title: "Vendas do Dia",
       desc: "Saiba exatamente quanto você vendeu hoje, ontem e no mês em tempo real.",
-      color: "from-emerald-500/20 to-emerald-600/5",
+      color: "from-indigo-500/20 to-indigo-600/5",
     },
     {
       icon: ShieldCheck,
@@ -77,19 +78,19 @@ export default function LandingPage() {
       icon: ScanBarcode,
       title: "Use o Celular",
       desc: "Transforme a câmera do seu celular em um leitor de código de barras.",
-      color: "from-amber-500/20 to-amber-600/5",
+      color: "from-fuchsia-500/20 to-fuchsia-600/5",
     },
     {
       icon: Users,
       title: "Equipe Conectada",
       desc: "Dê acesso aos vendedores com permissões limitadas. Você controla tudo.",
-      color: "from-rose-500/20 to-rose-600/5",
+      color: "from-purple-500/20 to-purple-600/5",
     },
     {
       icon: Bell,
       title: "Avisos de Reposição",
       desc: "O Stokk te avisa quando uma peça está acabando antes de você perder a venda.",
-      color: "from-cyan-500/20 to-cyan-600/5",
+      color: "from-indigo-500/20 to-indigo-600/5",
     },
   ];
 
@@ -245,56 +246,16 @@ export default function LandingPage() {
       </header>
 
       {/* ═══ HERO ═══ */}
-      <section className="relative pt-32 pb-32 px-6 overflow-hidden">
-        {/* Background decoration */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute top-20 left-1/4 w-[500px] h-[500px] bg-gradient-to-br from-primary/8 via-purple-500/5 to-transparent rounded-full blur-3xl animate-pulse-soft" />
-          <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-gradient-to-bl from-indigo-500/8 via-primary/5 to-transparent rounded-full blur-3xl animate-pulse-soft" style={{ animationDelay: '1s' }} />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-primary/3 to-purple-500/3 rounded-full blur-3xl" />
-        </div>
+      <ModernHero />
 
-        <div className="relative max-w-6xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-primary/10 via-purple-500/10 to-primary/10 border border-primary/20 text-sm font-medium mb-8 animate-in fade-in slide-in-from-bottom-3 duration-700 hover:scale-105 transition-transform cursor-default shadow-lg shadow-primary/5">
-            <Sparkles className="w-4 h-4 text-amber-500 animate-pulse" />
-            <span className="text-foreground/90">
-              Mais de <span className="font-bold text-foreground">120 lojas</span> organizadas
-            </span>
-          </div>
-          <h2 className="text-4xl md:text-6xl lg:text-7xl font-heading font-bold leading-tight mb-6">
-            Controle sua loja de roupas
-            <br className="hidden md:block" />{" "}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-purple-500 to-indigo-600 animate-gradient">
-              sem dor de cabeça
-            </span>
-          </h2>
-          <p className="text-muted-foreground mt-6 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed">
-            Abandone o caderninho e as planilhas confusas. O sistema simples e
-            visual feito para quem vende moda.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10 mb-20 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-200">
-            <Button 
-              size="lg" 
-              className="rounded-full px-10 h-14 text-base font-semibold shadow-2xl shadow-primary/30 hover:shadow-2xl hover:shadow-primary/40 hover:-translate-y-1 hover:scale-105 transition-all duration-300 group bg-gradient-to-r from-primary to-primary/90" 
-              onClick={() => navigate("/login")}
-            >
-              Acessar minha conta
-              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-            </Button>
-            <Button 
-              variant="outline" 
-              size="lg" 
-              className="rounded-full px-10 h-14 text-base hover:bg-muted/80 hover:border-foreground/20 hover:-translate-y-0.5 transition-all duration-300 border-2" 
-              onClick={() => document.getElementById('how')?.scrollIntoView({ behavior: 'smooth' })}
-            >
-              Ver como funciona
-            </Button>
-          </div>
+      {/* ═══ FEATURES GRID ═══ (Moved from old hero) */}
+      <section id="features" className="pb-24 px-6 bg-white">
+        <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((f, i) => (
               <div
                 key={f.title}
-                className="group glass-card rounded-3xl p-8 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-2 transition-all duration-500 cursor-default border-2 border-transparent hover:border-primary/10 backdrop-blur-xl"
+                className="group glass-card rounded-3xl p-8 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-2 transition-all duration-500 cursor-default border border-slate-100 hover:border-primary/10 bg-white"
                 style={{ animationDelay: `${i * 100}ms` }}
               >
                 <div
@@ -319,10 +280,10 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.02)_1px,transparent_1px)] bg-[length:24px_24px] pointer-events-none opacity-50" />
         <div className="max-w-6xl mx-auto relative">
           <div className="text-center mb-20">
-            <span className="inline-block text-sm font-bold text-primary/90 tracking-wider uppercase px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4">
+            <span className="inline-block text-sm font-bold text-purple-600 tracking-wider uppercase px-4 py-1.5 rounded-full bg-purple-50 border border-purple-100 mb-4">
               Como funciona
             </span>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold mt-4 bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold mt-4 bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700">
               Comece em 3 passos simples
             </h2>
           </div>
@@ -332,7 +293,7 @@ export default function LandingPage() {
                 {i < steps.length - 1 && (
                   <div className="hidden md:block absolute top-10 left-[60%] w-full h-px border-t-2 border-dashed border-border/50" />
                 )}
-                <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-foreground to-foreground/80 text-background font-heading font-bold text-2xl mb-6 relative z-10 shadow-xl shadow-foreground/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-600 text-white font-heading font-bold text-2xl mb-6 relative z-10 shadow-xl shadow-purple-200 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
                   {s.num}
                 </div>
                 <h3 className="font-heading font-bold text-xl mb-3">
@@ -352,10 +313,10 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent pointer-events-none" />
         <div className="max-w-7xl mx-auto relative">
           <div className="text-center mb-20">
-            <span className="inline-block text-sm font-bold text-primary/90 tracking-wider uppercase px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4">
+            <span className="inline-block text-sm font-bold text-purple-600 tracking-wider uppercase px-4 py-1.5 rounded-full bg-purple-50 border border-purple-100 mb-4">
               Planos
             </span>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold mt-4 bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold mt-4 bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700">
               O plano completo para sua loja
             </h2>
             <p className="text-muted-foreground mt-6 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
@@ -366,7 +327,7 @@ export default function LandingPage() {
 
           <div className="flex justify-center max-w-2xl mx-auto">
             {/* PRO */}
-            <div className="rounded-3xl p-10 relative bg-gradient-to-br from-foreground via-foreground to-foreground/90 text-background shadow-2xl shadow-foreground/20 transition-all duration-500 hover:-translate-y-2 hover:shadow-3xl hover:shadow-foreground/30 border border-background/10 w-full">
+            <div className="rounded-3xl p-10 relative bg-gradient-to-br from-purple-700 via-indigo-600 to-purple-800 text-white shadow-2xl shadow-purple-500/20 transition-all duration-500 hover:-translate-y-2 hover:shadow-3xl hover:shadow-purple-500/30 border border-white/10 w-full">
               <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-400 to-amber-500 text-foreground text-xs font-bold px-5 py-2 rounded-full shadow-lg flex items-center gap-2 animate-pulse">
                 <Sparkles className="w-4 h-4" />
                 MELHOR CUSTO-BENEFÍCIO
@@ -396,7 +357,7 @@ export default function LandingPage() {
                     key={f.text}
                     className="flex items-center gap-3 text-sm font-medium"
                   >
-                    <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-400" />
+                    <CheckCircle2 className="w-5 h-5 shrink-0 text-white" />
                     {f.text}
                   </li>
                 ))}
@@ -429,10 +390,10 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.02)_1px,transparent_1px)] bg-[length:24px_24px] pointer-events-none opacity-50" />
         <div className="max-w-7xl mx-auto relative">
           <div className="text-center mb-20">
-            <span className="inline-block text-sm font-bold text-primary/90 tracking-wider uppercase px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4">
+            <span className="inline-block text-sm font-bold text-purple-600 tracking-wider uppercase px-4 py-1.5 rounded-full bg-purple-50 border border-purple-100 mb-4">
               Depoimentos
             </span>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold mt-4 bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold mt-4 bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700">
               Quem usa, recomenda
             </h2>
           </div>
@@ -472,7 +433,7 @@ export default function LandingPage() {
       {/* ═══ CTA ═══ */}
       <section className="py-28 px-6">
         <div className="max-w-5xl mx-auto">
-          <div className="relative rounded-[2rem] bg-gradient-to-br from-foreground via-foreground to-foreground/90 text-background p-16 md:p-20 text-center overflow-hidden border border-background/10 shadow-2xl">
+          <div className="relative rounded-[2rem] bg-gradient-to-br from-purple-700 via-indigo-600 to-purple-900 text-white p-16 md:p-20 text-center overflow-hidden border border-white/10 shadow-2xl">
             {/* CTA background decorations */}
             <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full blur-3xl" />
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
