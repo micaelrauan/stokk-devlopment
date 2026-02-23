@@ -1,11 +1,37 @@
-import React, { useEffect, useState } from "react";
+﻿import { Building2, Package, TrendingUp, Users2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 
+interface AdminStat {
+  label: string;
+  value: string;
+  icon: React.ComponentType<{ className?: string }>;
+  tone: string;
+}
+
 export default function AdminDashboard() {
-  const [stats, setStats] = useState([
-    { label: "Empresas Ativas", value: "...", color: "text-blue-500 bg-blue-500/10" },
-    { label: "Empresas Totais", value: "...", color: "text-emerald-500 bg-emerald-500/10" },
-    { label: "Produtos Totais", value: "...", color: "text-amber-500 bg-amber-500/10" },
+  const [stats, setStats] = useState<AdminStat[]>([
+    {
+      label: "Empresas Ativas",
+      value: "...",
+      icon: Building2,
+      tone: "text-blue-600 bg-blue-500/10 border-blue-500/20",
+    },
+    {
+      label: "Empresas Totais",
+      value: "...",
+      icon: Users2,
+      tone: "text-emerald-600 bg-emerald-500/10 border-emerald-500/20",
+    },
+    {
+      label: "Produtos no Sistema",
+      value: "...",
+      icon: Package,
+      tone: "text-amber-600 bg-amber-500/10 border-amber-500/20",
+    },
   ]);
 
   useEffect(() => {
@@ -25,20 +51,23 @@ export default function AdminDashboard() {
           .select("*", { count: "exact", head: true });
 
         setStats([
-          { 
-            label: "Empresas Ativas", 
-            value: (activeCount ?? 0).toString(), 
-            color: "text-blue-500 bg-blue-500/10" 
+          {
+            label: "Empresas Ativas",
+            value: String(activeCount ?? 0),
+            icon: Building2,
+            tone: "text-blue-600 bg-blue-500/10 border-blue-500/20",
           },
-          { 
-            label: "Empresas Totais", 
-            value: (totalCompanies ?? 0).toString(), 
-            color: "text-emerald-500 bg-emerald-500/10" 
+          {
+            label: "Empresas Totais",
+            value: String(totalCompanies ?? 0),
+            icon: Users2,
+            tone: "text-emerald-600 bg-emerald-500/10 border-emerald-500/20",
           },
-          { 
-            label: "Produtos em Sistema", 
-            value: (totalProducts ?? 0).toString(), 
-            color: "text-amber-500 bg-amber-500/10" 
+          {
+            label: "Produtos no Sistema",
+            value: String(totalProducts ?? 0),
+            icon: Package,
+            tone: "text-amber-600 bg-amber-500/10 border-amber-500/20",
           },
         ]);
       } catch (err) {
@@ -50,30 +79,49 @@ export default function AdminDashboard() {
   }, []);
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {stats.map((s) => (
-          <div key={s.label} className="glass-card rounded-xl p-6 border border-border/40">
-            <p className="text-sm text-muted-foreground font-medium">{s.label}</p>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-3xl font-heading font-bold">{s.value}</span>
-              <span className={`w-2 h-2 rounded-full ${s.color.split(' ')[1]}`}></span>
+    <div className="p-4 sm:p-6 space-y-6">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        {stats.map((stat) => {
+          const Icon = stat.icon;
+
+          return (
+            <Card key={stat.label}>
+              <CardContent className="p-5">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm text-muted-foreground">{stat.label}</p>
+                    <p className="mt-1 text-3xl font-heading font-bold tracking-tight">{stat.value}</p>
+                  </div>
+                  <div className={`rounded-md border p-2 ${stat.tone}`}>
+                    <Icon className="h-4 w-4" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
+      <Card>
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <CardTitle className="text-base">Métricas Detalhadas</CardTitle>
+              <CardDescription>
+                Gráficos globais de crescimento e faturamento serão adicionados nesta seção.
+              </CardDescription>
             </div>
+            <Badge variant="outline" className="gap-1.5">
+              <TrendingUp className="h-3.5 w-3.5" />
+              Em breve
+            </Badge>
           </div>
-        ))}
-      </div>
-      
-      <div className="glass-card rounded-xl p-6 border border-border/40 min-h-[200px] flex flex-col items-center justify-center text-center">
-        <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-          <svg className="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-          </svg>
-        </div>
-        <p className="text-foreground font-semibold">Métricas Detalhadas</p>
-        <p className="text-muted-foreground text-sm max-w-xs mx-auto">
-          Em breve você poderá visualizar gráficos de crescimento e faturamento global.
-        </p>
-      </div>
+        </CardHeader>
+        <Separator />
+        <CardContent className="py-6 text-sm text-muted-foreground">
+          Você já pode usar as abas de Empresas e Mensalidades para gestão operacional.
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { CheckCircle2, Pencil, Plus, Search } from "lucide-react";
+import { CheckCircle2, Mail, Pencil, Plus, Search } from "lucide-react";
 
 const from = (table: string) => (supabase as any).from(table);
 
@@ -177,12 +177,20 @@ export default function AdminBillingPanel() {
   const [cycleFilter, setCycleFilter] = useState<string>("all");
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [showAdvancedFields, setShowAdvancedFields] = useState(false);
+  const [showSendDialog, setShowSendDialog] = useState(false);
+  const [sendingEmail, setSendingEmail] = useState(false);
+  const [sendTargetCompanyId, setSendTargetCompanyId] = useState("");
+  const [sendTargetCompanyName, setSendTargetCompanyName] = useState("");
+  const [sendEmailSubject, setSendEmailSubject] = useState("");
+  const [sendEmailHtml, setSendEmailHtml] = useState("");
   const [editingBillingId, setEditingBillingId] = useState<string | null>(null);
   const [form, setForm] = useState<BillingFormState>(EMPTY_FORM);
 
   const resetForm = () => {
     setForm(EMPTY_FORM);
     setEditingBillingId(null);
+    setShowAdvancedFields(false);
   };
 
   const fetchData = useCallback(async () => {
@@ -422,6 +430,8 @@ export default function AdminBillingPanel() {
         last_payment_amount: billing.amount,
         next_due_date: nextDueDate,
         status: "active",
+        reminder_3d_sent_at: null,
+        due_day_sent_at: null,
       })
       .eq("id", billing.id);
 
@@ -432,6 +442,74 @@ export default function AdminBillingPanel() {
 
     toast.success("Pagamento registrado");
     fetchData();
+  };
+
+  const callBillingEmailFunction = async (body: Record<string, unknown>) => {
+    const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/billing-reminder-emails`;
+    const apikey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData.session?.access_token;
+
+    if (!token) {
+      throw new Error("Sessão expirada. Faça login novamente.");
+    }
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        apikey,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(data?.error || data?.details || "Falha no envio de email");
+    }
+
+    return data;
+  };
+
+  const openSendEmailDialog = (row: BillingRow) => {
+    const dueDate = row.billing?.next_due_date ? formatDate(row.billing.next_due_date) : "sem vencimento";
+    const amount = row.billing ? formatMoney(row.billing.amount) : "—";
+    setSendTargetCompanyId(row.id);
+    setSendTargetCompanyName(row.company_name);
+    setSendEmailSubject(`Stokk: mensagem sobre sua assinatura`);
+    setSendEmailHtml(
+      `<div style="font-family: Arial, sans-serif; line-height:1.5;">
+  <h2>Olá, ${row.company_name}</h2>
+  <p>Estamos entrando em contato sobre sua assinatura na Stokk.</p>
+  <p>Próximo vencimento: <strong>${dueDate}</strong><br/>Valor: <strong>${amount}</strong></p>
+  <p>Equipe Stokk</p>
+</div>`,
+    );
+    setShowSendDialog(true);
+  };
+
+  const handleSendEmailToStore = async () => {
+    if (!sendTargetCompanyId || !sendEmailSubject.trim() || !sendEmailHtml.trim()) {
+      toast.error("Preencha assunto e conteúdo do email");
+      return;
+    }
+
+    setSendingEmail(true);
+    try {
+      await callBillingEmailFunction({
+        action: "send_to_store",
+        companyId: sendTargetCompanyId,
+        subject: sendEmailSubject,
+        html: sendEmailHtml,
+      });
+      toast.success("Email enviado com sucesso");
+      setShowSendDialog(false);
+    } catch (err: any) {
+      toast.error(`Erro ao enviar email: ${err?.message || "desconhecido"}`);
+    } finally {
+      setSendingEmail(false);
+    }
   };
 
   return (
@@ -510,7 +588,7 @@ export default function AdminBillingPanel() {
         </Select>
       </div>
 
-      <div className="space-y-3">
+      <div className="rounded-xl border border-border/40 bg-card/30 overflow-hidden">
         {loading ? (
           <div className="py-16 text-center text-muted-foreground">Carregando mensalidades...</div>
         ) : filteredRows.length === 0 ? (
@@ -518,94 +596,83 @@ export default function AdminBillingPanel() {
             Nenhum registro encontrado
           </div>
         ) : (
-          filteredRows.map((row) => (
-            <div key={row.id} className="p-4 rounded-xl border border-border/40 bg-card/30 space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="font-semibold truncate">{row.company_name}</p>
-                  <div className="flex flex-wrap items-center gap-2 mt-1">
-                    <span className="text-[10px] uppercase px-2 py-0.5 rounded bg-muted text-muted-foreground font-bold">
-                      Plano app: {row.plan || "free"}
-                    </span>
-                    {!row.is_active && (
-                      <span className="text-[10px] uppercase px-2 py-0.5 rounded bg-destructive/10 text-destructive font-bold">
-                        Conta inativa
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  {row.billing ? (
-                    <>
-                      <span className="text-[10px] uppercase px-2 py-0.5 rounded bg-primary/10 text-primary font-bold">
-                        {CYCLE_LABEL[row.billing.billing_cycle]}
-                      </span>
-                      <span
-                        className={`text-[10px] uppercase px-2 py-0.5 rounded font-bold ${STATUS_STYLE[row.billing.status]}`}
-                      >
-                        {STATUS_LABEL[row.billing.status]}
-                      </span>
-                    </>
-                  ) : (
-                    <span className="text-[10px] uppercase px-2 py-0.5 rounded bg-amber-500/10 text-amber-500 font-bold">
-                      Sem mensalidade
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 rounded-lg border border-border/50 p-3">
-                <div>
-                  <p className="text-[11px] text-muted-foreground">Valor</p>
-                  <p className="font-semibold">
-                    {row.billing
-                      ? `${formatMoney(row.billing.amount)} / ${CYCLE_LABEL[row.billing.billing_cycle]}`
-                      : "—"}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-[11px] text-muted-foreground">Próximo vencimento</p>
-                  <p className="font-semibold">
-                    {row.billing
-                      ? `Dia ${row.billing.due_day} • ${formatDate(row.billing.next_due_date)}`
-                      : "—"}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-[11px] text-muted-foreground">Último pagamento</p>
-                  <p className="font-semibold">{row.billing ? formatDate(row.billing.last_payment_date) : "—"}</p>
-                </div>
-                <div>
-                  <p className="text-[11px] text-muted-foreground">Método</p>
-                  <p className="font-semibold">{row.billing?.payment_method || "—"}</p>
-                </div>
-              </div>
-
-              {row.billing?.custom_description && (
-                <p className="text-xs text-muted-foreground line-clamp-2">{row.billing.custom_description}</p>
-              )}
-
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full lg:w-auto">
-                <Button
-                  variant="outline"
-                  className="rounded-lg w-full sm:w-auto"
-                  onClick={() => openEdit(row)}
-                >
-                  <Pencil className="w-4 h-4 mr-2" />
-                  {row.billing ? "Editar" : "Configurar"}
-                </Button>
-                <Button
-                  variant="default"
-                  className="rounded-lg w-full sm:w-auto"
-                  onClick={() => handleRegisterPayment(row)}
-                  disabled={!row.billing}
-                >
-                  <CheckCircle2 className="w-4 h-4 mr-2" />
-                  Marcar como pago
-                </Button>
-              </div>
-            </div>
-          ))
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[920px]">
+              <thead className="bg-muted/50 border-b border-border/60">
+                <tr>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground">Empresa</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground">Plano/Ciclo</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground">Valor</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground">Vencimento</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground">Último Pagamento</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground">Status</th>
+                  <th className="text-right px-4 py-3 text-xs font-semibold text-muted-foreground">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredRows.map((row) => (
+                  <tr key={row.id} className="border-b border-border/40 last:border-0">
+                    <td className="px-4 py-3">
+                      <p className="font-medium">{row.company_name}</p>
+                      <p className="text-xs text-muted-foreground">{row.is_active ? "Conta ativa" : "Conta inativa"}</p>
+                    </td>
+                    <td className="px-4 py-3 text-sm">
+                      {row.billing ? `${row.billing.plan_name || row.plan || "free"} • ${CYCLE_LABEL[row.billing.billing_cycle]}` : "Sem mensalidade"}
+                    </td>
+                    <td className="px-4 py-3 text-sm">
+                      {row.billing ? formatMoney(row.billing.amount) : "—"}
+                    </td>
+                    <td className="px-4 py-3 text-sm">
+                      {row.billing ? `Dia ${row.billing.due_day} • ${formatDate(row.billing.next_due_date)}` : "—"}
+                    </td>
+                    <td className="px-4 py-3 text-sm">
+                      {row.billing ? formatDate(row.billing.last_payment_date) : "—"}
+                    </td>
+                    <td className="px-4 py-3">
+                      {row.billing ? (
+                        <span className={`text-[11px] uppercase px-2 py-1 rounded font-bold ${STATUS_STYLE[row.billing.status]}`}>
+                          {STATUS_LABEL[row.billing.status]}
+                        </span>
+                      ) : (
+                        <span className="text-[11px] uppercase px-2 py-1 rounded font-bold bg-amber-500/10 text-amber-500">
+                          Sem mensalidade
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          className="rounded-lg h-9"
+                          onClick={() => openEdit(row)}
+                        >
+                          <Pencil className="w-4 h-4 mr-2" />
+                          {row.billing ? "Editar" : "Configurar"}
+                        </Button>
+                        <Button
+                          variant="default"
+                          className="rounded-lg h-9"
+                          onClick={() => handleRegisterPayment(row)}
+                          disabled={!row.billing}
+                        >
+                          <CheckCircle2 className="w-4 h-4 mr-2" />
+                          Pago
+                        </Button>
+                        <Button
+                          variant="secondary"
+                          className="rounded-lg h-9"
+                          onClick={() => openSendEmailDialog(row)}
+                        >
+                          <Mail className="w-4 h-4 mr-2" />
+                          Enviar Email
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
@@ -627,6 +694,9 @@ export default function AdminBillingPanel() {
           </DialogHeader>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+            <div className="md:col-span-2 pb-1">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Cobrança</p>
+            </div>
             <div className="md:col-span-2">
               <Label>Empresa *</Label>
               <Select
@@ -722,6 +792,9 @@ export default function AdminBillingPanel() {
                 onChange={(e) => setForm((prev) => ({ ...prev, grace_days: e.target.value }))}
               />
             </div>
+            <div className="md:col-span-2 border-t border-border/60 pt-3 pb-1">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Pagamento</p>
+            </div>
             <div>
               <Label>Próximo vencimento</Label>
               <Input
@@ -756,6 +829,20 @@ export default function AdminBillingPanel() {
                 placeholder="PIX, cartão, boleto..."
               />
             </div>
+            <div className="md:col-span-2 border-t border-border/60 pt-3">
+              <button
+                type="button"
+                className="text-sm font-medium text-primary hover:underline"
+                onClick={() => setShowAdvancedFields((v) => !v)}
+              >
+                {showAdvancedFields ? "Ocultar campos avançados" : "Mostrar campos avançados"}
+              </button>
+            </div>
+            {showAdvancedFields && (
+              <>
+                <div className="md:col-span-2 pb-1">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Avançado</p>
+                </div>
             <div>
               <Label>Início do contrato</Label>
               <Input
@@ -779,7 +866,7 @@ export default function AdminBillingPanel() {
                 onChange={(e) =>
                   setForm((prev) => ({ ...prev, custom_description: e.target.value }))
                 }
-                placeholder="Resumo visível no dashboard (benefícios, observaçÃµes comerciais, etc)"
+                placeholder="Resumo visível no dashboard (benefícios, observações comerciais, etc)"
                 rows={3}
               />
             </div>
@@ -805,6 +892,8 @@ export default function AdminBillingPanel() {
                 {form.auto_renew ? "Ativa" : "Inativa"}
               </Button>
             </div>
+              </>
+            )}
           </div>
 
           <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 pt-2">
@@ -813,6 +902,39 @@ export default function AdminBillingPanel() {
             </Button>
             <Button onClick={handleSave} disabled={saving} className="w-full sm:w-auto">
               {saving ? "Salvando..." : "Salvar Mensalidade"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showSendDialog} onOpenChange={setShowSendDialog}>
+        <DialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-2xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="font-heading">Enviar Email para Loja</DialogTitle>
+            <DialogDescription>
+              Envio manual para <strong>{sendTargetCompanyName}</strong>.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <div>
+              <Label>Assunto</Label>
+              <Input value={sendEmailSubject} onChange={(e) => setSendEmailSubject(e.target.value)} />
+            </div>
+            <div>
+              <Label>Conteúdo HTML</Label>
+              <Textarea
+                value={sendEmailHtml}
+                onChange={(e) => setSendEmailHtml(e.target.value)}
+                rows={8}
+              />
+            </div>
+          </div>
+          <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 pt-2">
+            <Button variant="outline" onClick={() => setShowSendDialog(false)} className="w-full sm:w-auto">
+              Cancelar
+            </Button>
+            <Button onClick={handleSendEmailToStore} disabled={sendingEmail} className="w-full sm:w-auto">
+              {sendingEmail ? "Enviando..." : "Enviar Email"}
             </Button>
           </div>
         </DialogContent>
