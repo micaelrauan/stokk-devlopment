@@ -42,3 +42,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 .eslintcache
+
+# Markdown docs
+*.md
+!README.md
