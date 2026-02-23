@@ -1,1 +1,4 @@
 project_id = "qqfmqeiyagirrctdbwex"
+
+[functions.billing-reminder-emails]
+verify_jwt = false
