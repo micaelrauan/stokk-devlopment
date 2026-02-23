@@ -396,10 +396,6 @@ export default function CompanyPanel() {
             Gerencie as empresas e contas do sistema ({users.length} total)
           </p>
         </div>
-        <Button onClick={() => setShowCreate(true)} className="gap-2 rounded-full px-6">
-          <Users className="w-4 h-4" />
-          Nova Empresa
-        </Button>
       </div>
 
       {/* Filters */}
